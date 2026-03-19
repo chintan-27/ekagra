@@ -50,4 +50,6 @@ export const brutalistConfig: ThemeConfig = {
   },
   sessionEmojis: ["\u25A0", "\u25A1", "\u25A0", "\u25A1"],
   quote: "Less, but better",
+  headingFont: "'Space Mono', monospace",
+  bodyFont: "'IBM Plex Mono', monospace",
 }

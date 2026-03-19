@@ -7,7 +7,7 @@ interface Props {
   modeLabel: string
 }
 
-const SIZE = 220
+const SIZE = 250
 const STROKE_WIDTH = 10
 const RADIUS = (SIZE - STROKE_WIDTH) / 2
 const CIRCUMFERENCE = 2 * Math.PI * RADIUS

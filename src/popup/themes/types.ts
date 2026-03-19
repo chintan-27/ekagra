@@ -22,4 +22,6 @@ export interface ThemeConfig {
   colors: Record<TimerMode, ColorPalette>
   sessionEmojis: string[]
   quote: string
+  headingFont: string
+  bodyFont: string
 }

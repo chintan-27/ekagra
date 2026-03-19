@@ -50,4 +50,6 @@ export const oceanConfig: ThemeConfig = {
   },
   sessionEmojis: ["\u{1F41A}", "\u{1FAB8}", "\u{1F420}", "\u{1F40B}"],
   quote: "Be like water, my friend",
+  headingFont: "'Josefin Sans', sans-serif",
+  bodyFont: "'Inter', sans-serif",
 }

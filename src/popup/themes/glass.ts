@@ -50,4 +50,6 @@ export const glassConfig: ThemeConfig = {
   },
   sessionEmojis: ["\u{1F52E}", "\u{1F48E}", "\u{1F319}", "\u2B50"],
   quote: "Clarity through focus",
+  headingFont: "'Sora', sans-serif",
+  bodyFont: "'Plus Jakarta Sans', sans-serif",
 }

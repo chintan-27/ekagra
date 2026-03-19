@@ -50,4 +50,6 @@ export const retroConfig: ThemeConfig = {
   },
   sessionEmojis: ["\u{1F47E}", "\u{1F579}\uFE0F", "\u{1F3AE}", "\u{1F3C6}"],
   quote: "Press start to focus",
+  headingFont: "'Press Start 2P', monospace",
+  bodyFont: "'VT323', monospace",
 }

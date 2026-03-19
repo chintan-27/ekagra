@@ -50,4 +50,6 @@ export const meadowConfig: ThemeConfig = {
   },
   sessionEmojis: ["\u{1F331}", "\u{1F33F}", "\u{1F338}", "\u{1F333}"],
   quote: "Grow through what you go through",
+  headingFont: "'Lora', Georgia, serif",
+  bodyFont: "'Source Sans 3', sans-serif",
 }

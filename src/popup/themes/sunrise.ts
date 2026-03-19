@@ -50,4 +50,6 @@ export const sunriseConfig: ThemeConfig = {
   },
   sessionEmojis: ["\u{1F431}", "\u{1F63A}", "\u{1F408}", "\u{1F638}"],
   quote: "You can do it, beautiful",
+  headingFont: "'Playfair Display', Georgia, serif",
+  bodyFont: "'Nunito', sans-serif",
 }

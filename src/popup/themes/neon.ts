@@ -50,4 +50,6 @@ export const neonConfig: ThemeConfig = {
   },
   sessionEmojis: ["\u26A1", "\u{1F525}", "\u{1F3AF}", "\u{1F48E}"],
   quote: "Execute with precision",
+  headingFont: "'Rajdhani', sans-serif",
+  bodyFont: "'Space Grotesk', sans-serif",
 }

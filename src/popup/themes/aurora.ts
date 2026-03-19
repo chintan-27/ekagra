@@ -50,4 +50,6 @@ export const auroraConfig: ThemeConfig = {
   },
   sessionEmojis: ["\u2728", "\u{1F49C}", "\u{1F499}", "\u{1F4AB}"],
   quote: "The universe is within you",
+  headingFont: "'Orbitron', sans-serif",
+  bodyFont: "'Exo 2', sans-serif",
 }

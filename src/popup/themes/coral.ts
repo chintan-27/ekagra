@@ -50,4 +50,6 @@ export const coralConfig: ThemeConfig = {
   },
   sessionEmojis: ["\u{1FAB7}", "\u{1F33A}", "\u{1F338}", "\u{1F4AE}"],
   quote: "Take care of yourself",
+  headingFont: "'DM Serif Display', Georgia, serif",
+  bodyFont: "'DM Sans', sans-serif",
 }

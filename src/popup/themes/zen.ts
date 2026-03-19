@@ -50,4 +50,6 @@ export const zenConfig: ThemeConfig = {
   },
   sessionEmojis: ["\u{1FAE7}", "\u{1F30A}", "\u{1F4A0}", "\u{1F9D8}"],
   quote: "Breathe in calm, breathe out chaos",
+  headingFont: "'Cormorant Garamond', Georgia, serif",
+  bodyFont: "'Karla', sans-serif",
 }

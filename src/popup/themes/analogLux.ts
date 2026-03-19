@@ -50,4 +50,6 @@ export const analogLuxConfig: ThemeConfig = {
   },
   sessionEmojis: ["\u23F1\uFE0F", "\u{1F514}", "\u231B", "\u{1F3C5}"],
   quote: "Every second counts",
+  headingFont: "'Cinzel', Georgia, serif",
+  bodyFont: "'Raleway', sans-serif",
 }
