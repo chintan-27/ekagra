@@ -13,136 +13,146 @@ interface Props {
 const W = 52
 const H = 68
 const HALF = H / 2
-const REST = 6 // rest angle in degrees for 3D depth
-const DUR = 450 // ms
+const DUR = 600 // ms total flip duration
+const GAP = 1 // pixel gap between halves (crease)
 
 const keyframes = `
-@keyframes flipTopDown {
-  0%   { transform: rotateX(-${REST}deg); }
-  100% { transform: rotateX(${180 - REST}deg); }
+@keyframes flipTop {
+  0%   { transform: rotateX(0deg); }
+  100% { transform: rotateX(-90deg); }
 }
-@keyframes flipBottomUp {
-  0%   { transform: rotateX(${-(180 - REST)}deg); }
-  100% { transform: rotateX(${REST}deg); }
+@keyframes flipBottom {
+  0%   { transform: rotateX(90deg); }
+  100% { transform: rotateX(0deg); }
 }
 `
 
-// Shared half styles
-const halfStyle: React.CSSProperties = {
+/* ── Shared card-half chrome ────────────────────────────────── */
+const cardBase: React.CSSProperties = {
   position: "absolute",
   left: 0,
   width: W,
   height: HALF,
   overflow: "hidden",
-  textAlign: "center",
   backfaceVisibility: "hidden",
-  transformStyle: "preserve-3d",
 }
 
-const fontStyle: React.CSSProperties = {
+const digitFont: React.CSSProperties = {
   fontSize: 44,
   fontWeight: 700,
-  color: "var(--text)",
   fontFamily: "'SF Mono', 'Fira Code', 'Courier New', monospace",
-  display: "block",
+  color: "var(--text)",
   width: W,
+  textAlign: "center",
+  display: "block",
+  position: "absolute",
+  left: 0,
 }
 
-function TopHalf({ digit, style }: { digit: string; style?: React.CSSProperties }) {
-  return (
-    <div
-      style={{
-        ...halfStyle,
-        top: 0,
-        background: "var(--surface, #1a1a2e)",
-        borderRadius: "8px 8px 0 0",
-        transformOrigin: "50% 100%",
-        transform: `rotateX(-${REST}deg)`,
-        boxShadow: "0 1px 3px rgba(0,0,0,0.15) inset",
-        ...style,
-      }}
-    >
-      {/* line-height = full height so only top half of text is visible */}
-      <span style={{ ...fontStyle, lineHeight: `${H + 2}px` }}>{digit}</span>
-    </div>
-  )
-}
-
-function BottomHalf({ digit, style }: { digit: string; style?: React.CSSProperties }) {
-  return (
-    <div
-      style={{
-        ...halfStyle,
-        top: HALF + 1,
-        background: "var(--surface, #1a1a2e)",
-        borderRadius: "0 0 8px 8px",
-        transformOrigin: "50% 0%",
-        transform: `rotateX(${REST}deg)`,
-        boxShadow: "0 4px 10px rgba(0,0,0,0.2)",
-        ...style,
-      }}
-    >
-      {/* line-height ≈ 0 so only bottom half of text is visible */}
-      <span style={{ ...fontStyle, lineHeight: "2px" }}>{digit}</span>
-    </div>
-  )
-}
+/* ── Individual card ────────────────────────────────────────── */
 
 function FlipCard({ digit }: { digit: string }) {
   const [cur, setCur] = useState(digit)
   const [prev, setPrev] = useState(digit)
-  const [flipping, setFlipping] = useState(false)
-  const timer = useRef<ReturnType<typeof setTimeout>>(null)
+  const [phase, setPhase] = useState<"idle" | "top" | "bottom">("idle")
+  const timeoutRef = useRef<ReturnType<typeof setTimeout>>(null)
 
   useEffect(() => {
     if (digit !== cur) {
       setPrev(cur)
       setCur(digit)
-      setFlipping(true)
-      if (timer.current) clearTimeout(timer.current)
-      timer.current = setTimeout(() => setFlipping(false), DUR)
+      // Start: top half falls
+      setPhase("top")
+      if (timeoutRef.current) clearTimeout(timeoutRef.current)
+      // At halfway point, switch to bottom phase
+      timeoutRef.current = setTimeout(() => {
+        setPhase("bottom")
+        timeoutRef.current = setTimeout(() => {
+          setPhase("idle")
+        }, DUR / 2)
+      }, DUR / 2)
     }
   }, [digit, cur])
+
+  const isFlipping = phase !== "idle"
 
   return (
     <div
       style={{
         width: W,
-        height: H + 1,
+        height: H + GAP,
         position: "relative",
-        perspective: H * 3,
-        transformStyle: "preserve-3d",
+        perspective: 300,
       }}
     >
-      {/* Layer 1: Static new digit (both halves, sits behind animations) */}
-      <TopHalf digit={cur} />
-      <BottomHalf digit={cur} />
+      {/* ─── STATIC BASE: always visible behind everything ─── */}
 
-      {/* Layer 2: Static old bottom half (visible until new bottom flips over it) */}
-      {flipping && (
-        <BottomHalf digit={prev} style={{ zIndex: 1 }} />
+      {/* Static top: shows NEW digit (revealed as old top falls away) */}
+      <div
+        style={{
+          ...cardBase,
+          top: 0,
+          background: "var(--surface, #1a1a2e)",
+          borderRadius: "6px 6px 0 0",
+          zIndex: 0,
+        }}
+      >
+        <span style={{ ...digitFont, top: 0, lineHeight: `${H}px` }}>
+          {cur}
+        </span>
+      </div>
+
+      {/* Static bottom: shows OLD digit (covered by new bottom flipping in) */}
+      <div
+        style={{
+          ...cardBase,
+          top: HALF + GAP,
+          background: "var(--surface, #1a1a2e)",
+          borderRadius: "0 0 6px 6px",
+          zIndex: 0,
+        }}
+      >
+        <span style={{ ...digitFont, bottom: 0, lineHeight: `${H}px` }}>
+          {isFlipping ? prev : cur}
+        </span>
+      </div>
+
+      {/* ─── ANIMATED TOP HALF: old digit, falls forward ─── */}
+      {(phase === "top") && (
+        <div
+          style={{
+            ...cardBase,
+            top: 0,
+            background: "var(--surface, #1a1a2e)",
+            borderRadius: "6px 6px 0 0",
+            transformOrigin: "center bottom",
+            animation: `flipTop ${DUR / 2}ms ease-in forwards`,
+            zIndex: 2,
+          }}
+        >
+          <span style={{ ...digitFont, top: 0, lineHeight: `${H}px` }}>
+            {prev}
+          </span>
+        </div>
       )}
 
-      {/* Layer 3: Animated old top half — flips down and away */}
-      {flipping && (
-        <TopHalf
-          digit={prev}
+      {/* ─── ANIMATED BOTTOM HALF: new digit, swings up into place ─── */}
+      {(phase === "bottom") && (
+        <div
           style={{
+            ...cardBase,
+            top: HALF + GAP,
+            background: "var(--surface, #1a1a2e)",
+            borderRadius: "0 0 6px 6px",
+            transformOrigin: "center top",
+            animation: `flipBottom ${DUR / 2}ms ease-out forwards`,
             zIndex: 2,
-            animation: `flipTopDown ${DUR}ms ease-in forwards`,
           }}
-        />
-      )}
-
-      {/* Layer 4: Animated new bottom half — flips up into place */}
-      {flipping && (
-        <BottomHalf
-          digit={cur}
-          style={{
-            zIndex: 2,
-            animation: `flipBottomUp ${DUR}ms ease-out forwards`,
-          }}
-        />
+        >
+          <span style={{ ...digitFont, bottom: 0, lineHeight: `${H}px` }}>
+            {cur}
+          </span>
+        </div>
       )}
 
       {/* Crease line */}
@@ -152,14 +162,16 @@ function FlipCard({ digit }: { digit: string }) {
           top: HALF,
           left: 0,
           width: "100%",
-          height: 1,
-          background: "rgba(0,0,0,0.3)",
+          height: GAP,
+          background: "rgba(0,0,0,0.25)",
           zIndex: 3,
         }}
       />
     </div>
   )
 }
+
+/* ── Main display ───────────────────────────────────────────── */
 
 export default function FlipDisplay({
   remaining,
