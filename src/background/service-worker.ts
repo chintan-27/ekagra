@@ -1,5 +1,5 @@
 import type { Message, MessageResponse } from "../types/timer"
-import { ALARM_NAME } from "../utils/constants"
+import { ALARM_NAME, BADGE_ALARM_NAME } from "../utils/constants"
 import { getDefaultState, getTimerState, setTimerState } from "./storage"
 import {
   computeRemaining,
@@ -23,6 +23,24 @@ function getNotificationDetails(mode: string): { title: string; message: string 
   }
 }
 
+const badgeColors: Record<string, string> = {
+  focus: "#4a90d9",
+  short_break: "#5cb85c",
+  long_break: "#9b59b6",
+}
+
+async function updateBadge(state: { isRunning: boolean; mode: string }): Promise<void> {
+  if (state.isRunning) {
+    const full = await getTimerState()
+    const remaining = computeRemaining(full)
+    const minutes = Math.ceil(remaining / 60000)
+    await chrome.action.setBadgeText({ text: `${minutes}m` })
+    await chrome.action.setBadgeBackgroundColor({ color: badgeColors[state.mode] ?? "#4a90d9" })
+  } else {
+    await chrome.action.setBadgeText({ text: "" })
+  }
+}
+
 async function createAlarmForState(): Promise<void> {
   const state = await getTimerState()
   await chrome.alarms.clear(ALARM_NAME)
@@ -30,8 +48,12 @@ async function createAlarmForState(): Promise<void> {
     const remaining = computeRemaining(state)
     if (remaining > 0) {
       chrome.alarms.create(ALARM_NAME, { delayInMinutes: remaining / 60000 })
+      chrome.alarms.create(BADGE_ALARM_NAME, { periodInMinutes: 1 })
     }
+  } else {
+    await chrome.alarms.clear(BADGE_ALARM_NAME)
   }
+  await updateBadge(state)
 }
 
 async function handleSessionComplete(): Promise<void> {
@@ -80,6 +102,9 @@ chrome.runtime.onStartup.addListener(async () => {
 chrome.alarms.onAlarm.addListener(async (alarm) => {
   if (alarm.name === ALARM_NAME) {
     await handleSessionComplete()
+  } else if (alarm.name === BADGE_ALARM_NAME) {
+    const state = await getTimerState()
+    await updateBadge(state)
   }
 })
 
@@ -107,12 +132,16 @@ async function handleMessage(message: Message): Promise<MessageResponse> {
       state = pauseTimer(state)
       await setTimerState(state)
       await chrome.alarms.clear(ALARM_NAME)
+      await chrome.alarms.clear(BADGE_ALARM_NAME)
+      await updateBadge(state)
       break
 
     case "RESET_TIMER":
       state = resetTimer(state)
       await setTimerState(state)
       await chrome.alarms.clear(ALARM_NAME)
+      await chrome.alarms.clear(BADGE_ALARM_NAME)
+      await updateBadge(state)
       break
 
     case "SKIP_SESSION":
