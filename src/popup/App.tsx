@@ -37,6 +37,8 @@ const backgrounds: Record<ThemeName, React.FC<{ mode: TimerMode }>> = {
   glass: GlassBackground,
 }
 
+type Tab = "timer" | "settings"
+
 const modeLabels: Record<TimerMode, string> = {
   focus: "Focus",
   short_break: "Short Break",
@@ -46,7 +48,7 @@ const modeLabels: Record<TimerMode, string> = {
 export default function App() {
   const { state, remaining, start, pause, reset, skip, goBack, setMode } = useTimer()
   const { settings, updateSettings } = useSettings()
-  const [showSettings, setShowSettings] = useState(false)
+  const [activeTab, setActiveTab] = useState<Tab>("timer")
 
   const themeName = settings.theme
   const theme = getTheme(themeName)
@@ -60,60 +62,76 @@ export default function App() {
     <div className="app">
       <Background mode={state.mode} />
 
-      <header className="app-header">
-        <h1 className="app-title">Ekagra</h1>
-        <button
-          className="btn-icon"
-          onClick={() => setShowSettings(!showSettings)}
-          title={showSettings ? "Back" : "Settings"}
-        >
-          {showSettings ? (
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <line x1="18" y1="6" x2="6" y2="18" />
-              <line x1="6" y1="6" x2="18" y2="18" />
-            </svg>
-          ) : (
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="12" cy="12" r="3" />
-              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
-            </svg>
-          )}
-        </button>
-      </header>
+      <div className="app-content">
+        {activeTab === "settings" ? (
+          <>
+            <div className="page-header">
+              <h2 className="page-title">Settings</h2>
+            </div>
+            <SettingsPanel settings={settings} onUpdate={updateSettings} />
+          </>
+        ) : (
+          <>
+            <header className="app-header">
+              <h1 className="app-title">Ekagra</h1>
+            </header>
 
-      {showSettings ? (
-        <SettingsPanel settings={settings} onUpdate={updateSettings} />
-      ) : (
-        <main className="timer-main">
-          <ModeTabs activeMode={state.mode} onSetMode={setMode} />
-          <div className="glass-card">
-            <TimerDisplaySwitch
-              displayType={settings.timerDisplay}
-              remaining={remaining}
-              total={state.duration}
-              isRunning={state.isRunning}
-              modeLabel={modeLabels[state.mode]}
-            />
-            <TimerControls
-              isRunning={state.isRunning}
-              onStart={start}
-              onPause={pause}
-              onReset={reset}
-              onSkip={skip}
-              onGoBack={goBack}
-            />
-            <SessionIndicator
-              completed={state.completedSessions}
-              total={state.settings.sessionsBeforeLongBreak}
-              isRunning={state.isRunning}
-              emojis={theme.sessionEmojis}
-            />
-          </div>
-          {theme.quote && (
-            <p className="theme-quote">{theme.quote}</p>
-          )}
-        </main>
-      )}
+            <ModeTabs activeMode={state.mode} onSetMode={setMode} />
+
+            <div className="glass-card">
+              <TimerDisplaySwitch
+                displayType={settings.timerDisplay}
+                remaining={remaining}
+                total={state.duration}
+                isRunning={state.isRunning}
+                modeLabel={modeLabels[state.mode]}
+              />
+              <TimerControls
+                isRunning={state.isRunning}
+                onStart={start}
+                onPause={pause}
+                onReset={reset}
+                onSkip={skip}
+                onGoBack={goBack}
+              />
+              <SessionIndicator
+                completed={state.completedSessions}
+                total={state.settings.sessionsBeforeLongBreak}
+                isRunning={state.isRunning}
+                emojis={theme.sessionEmojis}
+              />
+            </div>
+
+            {theme.quote && (
+              <p className="theme-quote">{theme.quote}</p>
+            )}
+          </>
+        )}
+      </div>
+
+      {/* Bottom Navigation */}
+      <nav className="bottom-nav">
+        <button
+          className={`nav-item${activeTab === "timer" ? " active" : ""}`}
+          onClick={() => setActiveTab("timer")}
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="12" cy="12" r="10" />
+            <polyline points="12 6 12 12 16 14" />
+          </svg>
+          <span>Timer</span>
+        </button>
+        <button
+          className={`nav-item${activeTab === "settings" ? " active" : ""}`}
+          onClick={() => setActiveTab("settings")}
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="12" cy="12" r="3" />
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+          </svg>
+          <span>Settings</span>
+        </button>
+      </nav>
     </div>
   )
 }

@@ -27,11 +27,6 @@ const displayOptions: { key: TimerDisplay; label: string; icon: string }[] = [
 export default function SettingsPanel({ settings, onUpdate }: Props) {
   return (
     <div className="settings-panel">
-      <div className="settings-header">
-        <h2 className="settings-title">Settings</h2>
-        <div className="settings-divider" />
-      </div>
-
       <div className="setting-group">
         <div className="setting-group-title">Theme</div>
         <div className="theme-picker-grid">
