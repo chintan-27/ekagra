@@ -1,42 +1,54 @@
 import type { TimerMode } from "../../types/timer"
 
 export interface ThemeColors {
-  background: string
+  bgFrom: string
+  bgTo: string
   surface: string
+  surfaceBorder: string
   primary: string
+  primaryGlow: string
   text: string
+  textMuted: string
   accent: string
-  progressTrack: string
-  progressFill: string
+  trackColor: string
 }
 
 export const themes: Record<TimerMode, ThemeColors> = {
   focus: {
-    background: "#1a1a2e",
-    surface: "#16213e",
-    primary: "#4a90d9",
-    text: "#e8e8e8",
-    accent: "#6cb4ee",
-    progressTrack: "#2a2a4a",
-    progressFill: "#4a90d9",
+    bgFrom: "#070b1e",
+    bgTo: "#101833",
+    surface: "rgba(255, 255, 255, 0.04)",
+    surfaceBorder: "rgba(255, 255, 255, 0.06)",
+    primary: "#5b8def",
+    primaryGlow: "rgba(91, 141, 239, 0.35)",
+    text: "#f0f2f8",
+    textMuted: "rgba(240, 242, 248, 0.45)",
+    accent: "#8bb0f4",
+    trackColor: "rgba(255, 255, 255, 0.06)",
   },
   short_break: {
-    background: "#1a2e1a",
-    surface: "#1e3a1e",
-    primary: "#5cb85c",
-    text: "#e8e8e8",
-    accent: "#7dd87d",
-    progressTrack: "#2a4a2a",
-    progressFill: "#5cb85c",
+    bgFrom: "#061a17",
+    bgTo: "#0c2e27",
+    surface: "rgba(255, 255, 255, 0.04)",
+    surfaceBorder: "rgba(255, 255, 255, 0.06)",
+    primary: "#4ecdc4",
+    primaryGlow: "rgba(78, 205, 196, 0.30)",
+    text: "#f0f8f6",
+    textMuted: "rgba(240, 248, 246, 0.45)",
+    accent: "#7ee8e1",
+    trackColor: "rgba(255, 255, 255, 0.06)",
   },
   long_break: {
-    background: "#2e1a2e",
-    surface: "#3a1e3a",
-    primary: "#9b59b6",
-    text: "#e8e8e8",
-    accent: "#bb77d4",
-    progressTrack: "#4a2a4a",
-    progressFill: "#9b59b6",
+    bgFrom: "#10061e",
+    bgTo: "#1e0f33",
+    surface: "rgba(255, 255, 255, 0.04)",
+    surfaceBorder: "rgba(255, 255, 255, 0.06)",
+    primary: "#a78bfa",
+    primaryGlow: "rgba(167, 139, 250, 0.30)",
+    text: "#f4f0f8",
+    textMuted: "rgba(244, 240, 248, 0.45)",
+    accent: "#c4b0fc",
+    trackColor: "rgba(255, 255, 255, 0.06)",
   },
 }
 

@@ -5,9 +5,9 @@ interface Props {
   total: number
 }
 
-const SIZE = 200
-const STROKE = 8
-const RADIUS = (SIZE - STROKE) / 2
+const SIZE = 220
+const STROKE = 6
+const RADIUS = (SIZE - STROKE * 4) / 2
 const CIRCUMFERENCE = 2 * Math.PI * RADIUS
 
 export default function TimerDisplay({ remaining, total }: Props) {
@@ -17,20 +17,30 @@ export default function TimerDisplay({ remaining, total }: Props) {
   return (
     <div className="timer-display">
       <svg width={SIZE} height={SIZE} viewBox={`0 0 ${SIZE} ${SIZE}`}>
+        <defs>
+          <linearGradient id="ringGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="var(--accent)" />
+            <stop offset="100%" stopColor="var(--primary)" />
+          </linearGradient>
+        </defs>
+
+        {/* Track */}
         <circle
           cx={SIZE / 2}
           cy={SIZE / 2}
           r={RADIUS}
           fill="none"
-          stroke="var(--progressTrack)"
+          stroke="var(--trackColor)"
           strokeWidth={STROKE}
         />
+
+        {/* Progress */}
         <circle
           cx={SIZE / 2}
           cy={SIZE / 2}
           r={RADIUS}
           fill="none"
-          stroke="var(--progressFill)"
+          stroke="url(#ringGradient)"
           strokeWidth={STROKE}
           strokeLinecap="round"
           strokeDasharray={CIRCUMFERENCE}

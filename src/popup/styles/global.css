@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Outfit:wght@300;400;500;600&display=swap');
+
 *,
 *::before,
 *::after {
@@ -7,214 +9,367 @@
 }
 
 :root {
-  --background: #1a1a2e;
-  --surface: #16213e;
-  --primary: #4a90d9;
-  --text: #e8e8e8;
-  --accent: #6cb4ee;
-  --progressTrack: #2a2a4a;
-  --progressFill: #4a90d9;
+  --bgFrom: #070b1e;
+  --bgTo: #101833;
+  --surface: rgba(255, 255, 255, 0.04);
+  --surfaceBorder: rgba(255, 255, 255, 0.06);
+  --primary: #5b8def;
+  --primaryGlow: rgba(91, 141, 239, 0.35);
+  --text: #f0f2f8;
+  --textMuted: rgba(240, 242, 248, 0.45);
+  --accent: #8bb0f4;
+  --trackColor: rgba(255, 255, 255, 0.06);
 }
 
 body {
-  width: 360px;
-  min-height: 480px;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  width: 380px;
+  min-height: 520px;
+  font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
   -webkit-font-smoothing: antialiased;
-  background: var(--background);
+  -moz-osx-font-smoothing: grayscale;
+  background: linear-gradient(160deg, var(--bgFrom) 0%, var(--bgTo) 100%);
   color: var(--text);
-  transition: background-color 0.6s ease;
+  overflow: hidden;
 }
 
 #root {
   width: 100%;
-  min-height: 480px;
+  min-height: 520px;
 }
 
-/* Layout */
+/* ===== App Shell ===== */
 
 .app {
   display: flex;
   flex-direction: column;
-  min-height: 480px;
-  padding: 20px 24px;
+  min-height: 520px;
+  padding: 24px 28px 28px;
+  position: relative;
 }
+
+/* ===== Header ===== */
 
 .app-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 12px;
+  margin-bottom: 8px;
 }
 
 .app-title {
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: var(--accent);
-  letter-spacing: 0.5px;
+  font-family: 'Cormorant Garamond', 'Georgia', serif;
+  font-size: 1.45rem;
+  font-weight: 500;
+  color: var(--text);
+  letter-spacing: 0.8px;
+  opacity: 0.9;
 }
+
+.btn-icon {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface);
+  border: 1px solid var(--surfaceBorder);
+  border-radius: 10px;
+  color: var(--textMuted);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-icon:hover {
+  color: var(--accent);
+  background: rgba(255, 255, 255, 0.07);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+/* ===== Timer Main ===== */
 
 .timer-main {
   display: flex;
   flex-direction: column;
   align-items: center;
   flex: 1;
-  gap: 20px;
-  padding-top: 8px;
+  padding-top: 12px;
 }
 
-/* Mode Label */
+/* ===== Mode Label ===== */
 
 .mode-label {
-  font-size: 0.9rem;
-  font-weight: 500;
-  color: var(--accent);
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--primary);
   text-transform: uppercase;
-  letter-spacing: 1.5px;
+  letter-spacing: 3px;
+  margin-bottom: 28px;
 }
 
-/* Timer Display */
+/* ===== Timer Display ===== */
 
 .timer-display {
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
+  margin-bottom: 32px;
+}
+
+.timer-display svg {
+  filter: drop-shadow(0 0 20px var(--primaryGlow));
 }
 
 .timer-text {
   position: absolute;
-  font-size: 3rem;
+  font-family: 'Outfit', sans-serif;
+  font-size: 3.4rem;
   font-weight: 300;
   font-variant-numeric: tabular-nums;
   color: var(--text);
-  letter-spacing: 2px;
+  letter-spacing: 4px;
 }
 
-/* Timer Controls */
+/* ===== Timer Controls ===== */
 
 .timer-controls {
   display: flex;
   align-items: center;
   gap: 16px;
+  margin-bottom: 32px;
 }
 
-.btn {
-  border: none;
+.btn-ctrl {
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface);
+  border: 1px solid var(--surfaceBorder);
+  border-radius: 50%;
+  color: var(--textMuted);
   cursor: pointer;
-  font-family: inherit;
-  transition: transform 0.1s ease, opacity 0.2s ease;
+  transition: all 0.2s ease;
 }
 
-.btn:active {
+.btn-ctrl:hover {
+  color: var(--accent);
+  background: rgba(255, 255, 255, 0.07);
+  border-color: rgba(255, 255, 255, 0.1);
+  transform: scale(1.05);
+}
+
+.btn-ctrl:active {
   transform: scale(0.95);
 }
 
-.btn-primary {
-  background: var(--primary);
+.btn-play {
+  width: 130px;
+  height: 48px;
+  border-radius: 28px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 500;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
   color: #fff;
-  font-size: 1rem;
-  font-weight: 600;
-  padding: 12px 40px;
-  border-radius: 40px;
-  letter-spacing: 0.5px;
+  background: var(--primary);
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 24px var(--primaryGlow);
+  transition: all 0.2s ease;
 }
 
-.btn-primary:hover {
-  opacity: 0.9;
+.btn-play:hover {
+  box-shadow: 0 6px 32px var(--primaryGlow);
+  transform: translateY(-1px);
 }
 
-.btn-secondary {
-  background: var(--surface);
-  color: var(--accent);
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.btn-play:active {
+  transform: translateY(0) scale(0.98);
 }
 
-.btn-secondary:hover {
-  opacity: 0.8;
-}
-
-.btn-icon {
-  background: none;
-  color: var(--accent);
-  width: 32px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 8px;
-}
-
-.btn-icon:hover {
-  background: var(--surface);
-}
-
-/* Session Indicator */
+/* ===== Session Indicator ===== */
 
 .session-indicator {
   display: flex;
-  gap: 8px;
+  gap: 10px;
+  align-items: center;
 }
 
 .session-dot {
-  width: 10px;
-  height: 10px;
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
-  background: var(--progressTrack);
-  transition: background-color 0.3s ease;
+  background: var(--trackColor);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: all 0.4s ease;
 }
 
 .session-dot.completed {
   background: var(--primary);
+  border-color: transparent;
+  box-shadow: 0 0 8px var(--primaryGlow);
 }
 
-/* Settings Panel */
+/* ===== Settings Panel ===== */
 
 .settings-panel {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 4px;
   padding-top: 8px;
+  flex: 1;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.settings-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
 }
 
 .settings-title {
-  font-size: 1rem;
+  font-family: 'Cormorant Garamond', 'Georgia', serif;
+  font-size: 1.15rem;
+  font-weight: 500;
+  color: var(--text);
+  opacity: 0.9;
+}
+
+.settings-divider {
+  flex: 1;
+  height: 1px;
+  background: var(--surfaceBorder);
+}
+
+.setting-group {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-bottom: 16px;
+}
+
+.setting-group-title {
+  font-size: 0.6rem;
   font-weight: 600;
-  color: var(--accent);
-  margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--textMuted);
+  margin-bottom: 10px;
 }
 
 .setting-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 0.85rem;
-  color: var(--text);
-}
-
-.setting-row input[type="number"] {
-  width: 64px;
-  padding: 6px 8px;
-  border: 1px solid var(--progressTrack);
-  border-radius: 6px;
+  padding: 10px 14px;
+  border-radius: 10px;
   background: var(--surface);
+  border: 1px solid var(--surfaceBorder);
+  cursor: default;
+}
+
+.setting-row:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.setting-label {
+  font-size: 0.82rem;
+  font-weight: 400;
   color: var(--text);
-  font-size: 0.85rem;
+  opacity: 0.85;
+}
+
+.setting-input {
+  width: 56px;
+  padding: 5px 0;
+  border: none;
+  border-bottom: 1.5px solid var(--surfaceBorder);
+  border-radius: 0;
+  background: transparent;
+  color: var(--text);
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 500;
   text-align: center;
+  outline: none;
+  transition: border-color 0.2s ease;
 }
 
-.setting-row input[type="number"]:focus {
-  outline: 1px solid var(--primary);
-  border-color: var(--primary);
+.setting-input:focus {
+  border-bottom-color: var(--primary);
 }
 
-.setting-row.toggle input[type="checkbox"] {
-  width: 18px;
-  height: 18px;
-  accent-color: var(--primary);
+/* Chrome hides spin buttons by default in extensions, so make them visible */
+.setting-input::-webkit-inner-spin-button {
+  opacity: 0.5;
+}
+
+/* Custom Toggle Switch */
+
+.toggle-switch {
+  position: relative;
+  width: 40px;
+  height: 22px;
+  flex-shrink: 0;
+}
+
+.toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+  position: absolute;
+}
+
+.toggle-track {
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 11px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.toggle-track::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  background: var(--textMuted);
+  border-radius: 50%;
+  transition: all 0.25s ease;
+}
+
+.toggle-switch input:checked + .toggle-track {
+  background: var(--primary);
+  border-color: transparent;
+  box-shadow: 0 0 12px var(--primaryGlow);
+}
+
+.toggle-switch input:checked + .toggle-track::after {
+  transform: translateX(18px);
+  background: #fff;
+}
+
+/* ===== Global transitions ===== */
+
+body,
+.btn-play,
+.session-dot.completed,
+.timer-display svg,
+.mode-label {
+  transition-property: background, background-color, color, box-shadow, filter;
+  transition-duration: 0.6s;
+  transition-timing-function: ease;
 }
