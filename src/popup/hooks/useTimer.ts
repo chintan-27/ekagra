@@ -16,19 +16,35 @@ export function useTimer() {
   }, [])
 
   // Animate countdown display via requestAnimationFrame
+  // When remaining hits 0, poll service worker for the transitioned state
   useEffect(() => {
     if (!state.isRunning) {
       setRemaining(computeRemaining(state))
       return
     }
 
+    let pollTimer: ReturnType<typeof setTimeout>
     const tick = () => {
       const r = state.duration - (Date.now() - state.startTime)
-      setRemaining(Math.max(0, r))
+      if (r <= 0) {
+        setRemaining(0)
+        // Session ended — service worker alarm will transition state.
+        // Poll for the new state after a short delay to let the alarm fire.
+        pollTimer = setTimeout(() => {
+          chrome.runtime.sendMessage({ type: "GET_STATE" }, (response) => {
+            if (response?.state) setState(response.state)
+          })
+        }, 500)
+        return
+      }
+      setRemaining(r)
       rafRef.current = requestAnimationFrame(tick)
     }
     tick()
-    return () => cancelAnimationFrame(rafRef.current)
+    return () => {
+      cancelAnimationFrame(rafRef.current)
+      clearTimeout(pollTimer)
+    }
   }, [state.isRunning, state.startTime, state.duration, state.mode, state.pausedRemaining, state.settings])
 
   const send = useCallback((msg: object) => {

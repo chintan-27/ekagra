@@ -13,16 +13,12 @@ interface Props {
 const W = 52
 const H = 68
 const HALF = H / 2
-const DUR = 500
+const DUR = 350
 
 const keyframes = `
-@keyframes foldTop {
+@keyframes foldDown {
   0%   { transform: perspective(${H * 4}px) rotateX(0deg); }
   100% { transform: perspective(${H * 4}px) rotateX(-90deg); }
-}
-@keyframes unfoldBottom {
-  0%   { transform: perspective(${H * 4}px) rotateX(90deg); }
-  100% { transform: perspective(${H * 4}px) rotateX(0deg); }
 }
 `
 
@@ -32,11 +28,10 @@ const cardHalf: React.CSSProperties = {
   width: W,
   height: HALF,
   overflow: "hidden",
-  backfaceVisibility: "hidden",
   background: "var(--surface, #1a1a2e)",
 }
 
-const digitSpan: React.CSSProperties = {
+const digitText: React.CSSProperties = {
   display: "block",
   width: W,
   height: H,
@@ -51,85 +46,52 @@ const digitSpan: React.CSSProperties = {
 function FlipCard({ digit }: { digit: string }) {
   const [cur, setCur] = useState(digit)
   const [prev, setPrev] = useState(digit)
-  const [phase, setPhase] = useState<"idle" | "fold" | "unfold">("idle")
-  const ref = useRef<ReturnType<typeof setTimeout>>(null)
+  const [flipping, setFlipping] = useState(false)
+  const timerRef = useRef<ReturnType<typeof setTimeout>>(null)
+  const flipKey = useRef(0)
 
   useEffect(() => {
     if (digit !== cur) {
       setPrev(cur)
       setCur(digit)
-      setPhase("fold")
-      if (ref.current) clearTimeout(ref.current)
-      ref.current = setTimeout(() => {
-        setPhase("unfold")
-        ref.current = setTimeout(() => setPhase("idle"), DUR / 2)
-      }, DUR / 2)
+      setFlipping(true)
+      flipKey.current++
+      if (timerRef.current) clearTimeout(timerRef.current)
+      timerRef.current = setTimeout(() => setFlipping(false), DUR + 50)
     }
   }, [digit, cur])
 
   return (
     <div style={{ width: W, height: H + 1, position: "relative" }}>
-      {/* ── STATIC TOP: new digit (revealed when old top folds away) ── */}
-      <div
-        style={{
-          ...cardHalf,
-          top: 0,
-          borderRadius: "6px 6px 0 0",
-          zIndex: 0,
-        }}
-      >
-        <span style={digitSpan}>{cur}</span>
+      {/* Static top half — always shows NEW digit */}
+      <div style={{ ...cardHalf, top: 0, borderRadius: "6px 6px 0 0" }}>
+        <span style={digitText}>{cur}</span>
       </div>
 
-      {/* ── STATIC BOTTOM: shows old during fold, new when done ── */}
-      <div
-        style={{
-          ...cardHalf,
-          top: HALF + 1,
-          borderRadius: "0 0 6px 6px",
-          zIndex: 0,
-        }}
-      >
-        <span style={{ ...digitSpan, marginTop: -HALF }}>
-          {phase === "fold" ? prev : cur}
-        </span>
+      {/* Static bottom half — always shows NEW digit */}
+      <div style={{ ...cardHalf, top: HALF + 1, borderRadius: "0 0 6px 6px" }}>
+        <span style={{ ...digitText, marginTop: -HALF }}>{cur}</span>
       </div>
 
-      {/* ── ANIMATED TOP: old digit, folds down and away ── */}
-      {phase === "fold" && (
+      {/* Animated flap: OLD digit top half folds down and away */}
+      {flipping && (
         <div
+          key={flipKey.current}
           style={{
             ...cardHalf,
             top: 0,
             borderRadius: "6px 6px 0 0",
             transformOrigin: "center bottom",
-            animation: `foldTop ${DUR / 2}ms ease-in forwards`,
+            animation: `foldDown ${DUR}ms ease-in forwards`,
             zIndex: 2,
+            boxShadow: "0 2px 6px rgba(0,0,0,0.2)",
           }}
         >
-          <span style={digitSpan}>{prev}</span>
+          <span style={digitText}>{prev}</span>
         </div>
       )}
 
-      {/* ── ANIMATED BOTTOM: new digit, unfolds into place ── */}
-      {phase === "unfold" && (
-        <div
-          style={{
-            ...cardHalf,
-            top: HALF + 1,
-            borderRadius: "0 0 6px 6px",
-            transformOrigin: "center top",
-            animation: `unfoldBottom ${DUR / 2}ms ease-out forwards`,
-            zIndex: 2,
-          }}
-        >
-          <span style={{ ...digitSpan, marginTop: -HALF }}>
-            {cur}
-          </span>
-        </div>
-      )}
-
-      {/* Crease */}
+      {/* Crease line */}
       <div
         style={{
           position: "absolute",
