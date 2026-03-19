@@ -1,6 +1,7 @@
 import type { Message, MessageResponse } from "../types/timer"
 import { ALARM_NAME, BADGE_ALARM_NAME } from "../utils/constants"
 import { getDefaultState, getTimerState, setTimerState } from "./storage"
+import { getStatsData, recordFocusSession } from "./stats-storage"
 import {
   computeRemaining,
   isSessionComplete,
@@ -61,6 +62,11 @@ async function createAlarmForState(): Promise<void> {
 async function handleSessionComplete(): Promise<void> {
   const state = await getTimerState()
   if (!isSessionComplete(state)) return
+
+  // Record focus sessions in stats
+  if (state.mode === "focus") {
+    await recordFocusSession(state.duration)
+  }
 
   const nextState = transitionToNextSession(state)
   await setTimerState(nextState)
@@ -182,6 +188,16 @@ async function handleMessage(message: Message): Promise<MessageResponse> {
         await createAlarmForState()
       }
       break
+
+    case "GET_STATS": {
+      const stats = await getStatsData()
+      return { state, stats }
+    }
+
+    case "RECORD_SESSION": {
+      const stats = await recordFocusSession(message.focusMinutes * 60000)
+      return { state, stats }
+    }
   }
 
   return { state }
