@@ -44,6 +44,7 @@ export function useTimer() {
     pause: () => send({ type: "PAUSE_TIMER" }),
     reset: () => send({ type: "RESET_TIMER" }),
     skip: () => send({ type: "SKIP_SESSION" }),
+    goBack: () => send({ type: "GO_BACK" }),
     setMode: (mode: TimerMode) => send({ type: "SET_MODE", mode }),
   }
 }

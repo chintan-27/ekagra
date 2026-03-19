@@ -2,12 +2,40 @@ import { useEffect, useState } from "react"
 import { useTimer } from "./hooks/useTimer"
 import { useSettings } from "./hooks/useSettings"
 import { applyTheme } from "./styles/theme"
-import type { TimerMode } from "../types/timer"
-import TimerDisplay from "./components/TimerDisplay"
+import { getTheme } from "./themes"
+import type { ThemeName, TimerMode } from "../types/timer"
+import TimerDisplaySwitch from "./components/displays/TimerDisplaySwitch"
 import TimerControls from "./components/TimerControls"
 import SessionIndicator from "./components/SessionIndicator"
 import ModeTabs from "./components/ModeTabs"
 import SettingsPanel from "./components/SettingsPanel"
+
+// Background components
+import SunriseBackground from "./components/backgrounds/SunriseBackground"
+import MeadowBackground from "./components/backgrounds/MeadowBackground"
+import OceanBackground from "./components/backgrounds/OceanBackground"
+import AuroraBackground from "./components/backgrounds/AuroraBackground"
+import ZenBackground from "./components/backgrounds/ZenBackground"
+import NeonBackground from "./components/backgrounds/NeonBackground"
+import RetroBackground from "./components/backgrounds/RetroBackground"
+import BrutalistBackground from "./components/backgrounds/BrutalistBackground"
+import CoralBackground from "./components/backgrounds/CoralBackground"
+import AnalogBackground from "./components/backgrounds/AnalogBackground"
+import GlassBackground from "./components/backgrounds/GlassBackground"
+
+const backgrounds: Record<ThemeName, React.FC<{ mode: TimerMode }>> = {
+  sunrise: SunriseBackground,
+  meadow: MeadowBackground,
+  ocean: OceanBackground,
+  aurora: AuroraBackground,
+  zen: ZenBackground,
+  neon: NeonBackground,
+  retro: RetroBackground,
+  brutalist: BrutalistBackground,
+  coral: CoralBackground,
+  analogLux: AnalogBackground,
+  glass: GlassBackground,
+}
 
 const modeLabels: Record<TimerMode, string> = {
   focus: "Focus",
@@ -16,16 +44,22 @@ const modeLabels: Record<TimerMode, string> = {
 }
 
 export default function App() {
-  const { state, remaining, start, pause, reset, skip, setMode } = useTimer()
+  const { state, remaining, start, pause, reset, skip, goBack, setMode } = useTimer()
   const { settings, updateSettings } = useSettings()
   const [showSettings, setShowSettings] = useState(false)
 
+  const themeName = settings.theme
+  const theme = getTheme(themeName)
+  const Background = backgrounds[themeName] ?? backgrounds.sunrise
+
   useEffect(() => {
-    applyTheme(state.mode)
-  }, [state.mode])
+    applyTheme(themeName, state.mode)
+  }, [themeName, state.mode])
 
   return (
     <div className="app">
+      <Background mode={state.mode} />
+
       <header className="app-header">
         <h1 className="app-title">Ekagra</h1>
         <button
@@ -53,7 +87,8 @@ export default function App() {
         <main className="timer-main">
           <ModeTabs activeMode={state.mode} onSetMode={setMode} />
           <div className="glass-card">
-            <TimerDisplay
+            <TimerDisplaySwitch
+              displayType={settings.timerDisplay}
               remaining={remaining}
               total={state.duration}
               isRunning={state.isRunning}
@@ -65,13 +100,18 @@ export default function App() {
               onPause={pause}
               onReset={reset}
               onSkip={skip}
+              onGoBack={goBack}
             />
             <SessionIndicator
               completed={state.completedSessions}
               total={state.settings.sessionsBeforeLongBreak}
               isRunning={state.isRunning}
+              emojis={theme.sessionEmojis}
             />
           </div>
+          {theme.quote && (
+            <p className="theme-quote">{theme.quote}</p>
+          )}
         </main>
       )}
     </div>
