@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import { useTimer } from "./hooks/useTimer"
 import { useSettings } from "./hooks/useSettings"
+import { useStats } from "./hooks/useStats"
 import { applyTheme } from "./styles/theme"
 import { getTheme } from "./themes"
 import type { ThemeName, TimerMode } from "../types/timer"
@@ -9,6 +10,7 @@ import TimerControls from "./components/TimerControls"
 import SessionIndicator from "./components/SessionIndicator"
 import ModeTabs from "./components/ModeTabs"
 import SettingsPanel from "./components/SettingsPanel"
+import StatsPage from "./components/StatsPage"
 
 // Background components
 import SunriseBackground from "./components/backgrounds/SunriseBackground"
@@ -37,7 +39,7 @@ const backgrounds: Record<ThemeName, React.FC<{ mode: TimerMode }>> = {
   glass: GlassBackground,
 }
 
-type Tab = "timer" | "settings"
+type Tab = "timer" | "stats" | "settings"
 
 const modeLabels: Record<TimerMode, string> = {
   focus: "Focus",
@@ -48,6 +50,7 @@ const modeLabels: Record<TimerMode, string> = {
 export default function App() {
   const { state, remaining, start, pause, reset, skip, goBack, setMode } = useTimer()
   const { settings, updateSettings } = useSettings()
+  const { stats, refresh: refreshStats } = useStats()
   const [activeTab, setActiveTab] = useState<Tab>("timer")
 
   const themeName = settings.theme
@@ -69,6 +72,13 @@ export default function App() {
               <h2 className="page-title">Settings</h2>
             </div>
             <SettingsPanel settings={settings} onUpdate={updateSettings} />
+          </>
+        ) : activeTab === "stats" ? (
+          <>
+            <div className="page-header">
+              <h2 className="page-title">Stats</h2>
+            </div>
+            <StatsPage stats={stats} sessionEmojis={theme.sessionEmojis} />
           </>
         ) : (
           <>
@@ -120,6 +130,17 @@ export default function App() {
             <polyline points="12 6 12 12 16 14" />
           </svg>
           <span>Timer</span>
+        </button>
+        <button
+          className={`nav-item${activeTab === "stats" ? " active" : ""}`}
+          onClick={() => { setActiveTab("stats"); refreshStats() }}
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="18" y1="20" x2="18" y2="10" />
+            <line x1="12" y1="20" x2="12" y2="4" />
+            <line x1="6" y1="20" x2="6" y2="14" />
+          </svg>
+          <span>Stats</span>
         </button>
         <button
           className={`nav-item${activeTab === "settings" ? " active" : ""}`}
