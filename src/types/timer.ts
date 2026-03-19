@@ -38,7 +38,25 @@ export type Message =
   | { type: "SET_MODE"; mode: TimerMode }
   | { type: "UPDATE_SETTINGS"; settings: Partial<TimerSettings> }
   | { type: "GET_STATE" }
+  | { type: "GET_STATS" }
+  | { type: "RECORD_SESSION"; focusMinutes: number }
+
+export interface DailyStats {
+  date: string              // "YYYY-MM-DD"
+  focusMinutes: number      // total focus minutes completed
+  sessionsCompleted: number
+  longestStreak: number     // consecutive sessions without skip
+}
+
+export interface StatsData {
+  today: DailyStats
+  history: DailyStats[]     // last 7 days
+  allTimeFocusMinutes: number
+  allTimeSessions: number
+  currentStreak: number     // consecutive days with ≥1 session
+}
 
 export interface MessageResponse {
   state: TimerState
+  stats?: StatsData
 }
