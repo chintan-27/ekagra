@@ -80,6 +80,58 @@ export default function ZenBackground({ mode }: Props) {
           }}
         />
       ))}
+
+      {/* SVG overlay: zen garden elements */}
+      <svg
+        style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }}
+        viewBox="0 0 440 620"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        {/* Moon - large circle, upper right corner */}
+        <circle cx="370" cy="60" r="35" fill="var(--primary)" opacity="0.05" />
+
+        {/* Floating leaf shapes */}
+        <g opacity="0.04" stroke="var(--primary)" strokeWidth="1" fill="none">
+          <path
+            d="M60 150 Q75 130 90 150 Q75 170 60 150 Z"
+            transform="rotate(-20 75 150)"
+          />
+          <path
+            d="M320 250 Q335 230 350 250 Q335 270 320 250 Z"
+            transform="rotate(15 335 250)"
+          />
+          <path
+            d="M180 450 Q195 430 210 450 Q195 470 180 450 Z"
+            transform="rotate(-35 195 450)"
+          />
+          <path
+            d="M100 520 Q115 500 130 520 Q115 540 100 520 Z"
+            transform="rotate(25 115 520)"
+          />
+        </g>
+
+        {/* Zen garden ripple circles - concentric, no fill */}
+        <g opacity="0.05" stroke="var(--accent)" strokeWidth="0.8" fill="none">
+          <circle cx="220" cy="500" r="25" />
+          <circle cx="220" cy="500" r="40" />
+          <circle cx="220" cy="500" r="55" />
+        </g>
+
+        {/* Bamboo stalks - left side */}
+        <g opacity="0.04" stroke="var(--primary)" strokeWidth="2" fill="none">
+          {/* Left stalk */}
+          <line x1="20" y1="100" x2="20" y2="550" />
+          <line x1="15" y1="200" x2="25" y2="200" />
+          <line x1="15" y1="330" x2="25" y2="330" />
+          <line x1="15" y1="460" x2="25" y2="460" />
+          {/* Right stalk */}
+          <line x1="420" y1="80" x2="420" y2="580" />
+          <line x1="415" y1="180" x2="425" y2="180" />
+          <line x1="415" y1="310" x2="425" y2="310" />
+          <line x1="415" y1="440" x2="425" y2="440" />
+        </g>
+      </svg>
     </div>
   );
 }

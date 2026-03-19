@@ -70,6 +70,90 @@ export default function RetroBackground({ mode }: Props) {
           }}
         />
       ))}
+
+      {/* SVG overlay: retro elements */}
+      <svg
+        style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }}
+        viewBox="0 0 440 620"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <defs>
+          <linearGradient id="shootingStarGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stopColor="var(--accent)" stopOpacity="0.15" />
+            <stop offset="100%" stopColor="var(--accent)" stopOpacity="0" />
+          </linearGradient>
+          {/* CRT vignette radial gradient */}
+          <radialGradient id="crtVignette" cx="50%" cy="50%" r="50%">
+            <stop offset="60%" stopColor="transparent" />
+            <stop offset="100%" stopColor="rgba(0,0,0,0.4)" />
+          </radialGradient>
+        </defs>
+
+        {/* Pixel art mountains - blocky stepped polygon */}
+        <polygon
+          points="0,580 0,540 30,540 30,520 60,520 60,500 90,500 90,480 120,480 120,460 150,460 150,480 180,480 180,500 210,500 210,480 240,480 240,450 270,450 270,430 300,430 300,450 330,450 330,470 360,470 360,490 390,490 390,510 420,510 420,540 440,540 440,580"
+          fill="var(--primary)"
+          opacity="0.05"
+        />
+
+        {/* Retro sun - circle with horizontal stripes */}
+        <g opacity="0.07">
+          <circle cx="350" cy="80" r="40" fill="var(--accent)" />
+          {/* Horizontal stripes cutting through the sun */}
+          <rect x="310" y="68" width="80" height="4" fill="var(--bgFrom)" />
+          <rect x="310" y="78" width="80" height="5" fill="var(--bgFrom)" />
+          <rect x="310" y="89" width="80" height="6" fill="var(--bgFrom)" />
+          <rect x="310" y="101" width="80" height="7" fill="var(--bgFrom)" />
+        </g>
+
+        {/* Shooting star */}
+        <line
+          x1="50" y1="100"
+          x2="140" y2="70"
+          stroke="url(#shootingStarGrad)"
+          strokeWidth="2"
+          strokeLinecap="round"
+        />
+        <circle cx="50" cy="100" r="2" fill="var(--accent)" opacity="0.12" />
+
+        {/* Space invader silhouettes - tiny pixel creatures */}
+        {/* Invader 1 */}
+        <g fill="var(--primary)" opacity="0.06" transform="translate(60, 300)">
+          <rect x="4" y="0" width="2" height="2" />
+          <rect x="10" y="0" width="2" height="2" />
+          <rect x="2" y="2" width="2" height="2" />
+          <rect x="6" y="2" width="4" height="2" />
+          <rect x="12" y="2" width="2" height="2" />
+          <rect x="0" y="4" width="2" height="2" />
+          <rect x="4" y="4" width="2" height="2" />
+          <rect x="6" y="4" width="4" height="2" />
+          <rect x="10" y="4" width="2" height="2" />
+          <rect x="14" y="4" width="2" height="2" />
+          <rect x="0" y="6" width="16" height="2" />
+          <rect x="2" y="8" width="4" height="2" />
+          <rect x="10" y="8" width="4" height="2" />
+        </g>
+        {/* Invader 2 */}
+        <g fill="var(--accent)" opacity="0.05" transform="translate(340, 420)">
+          <rect x="4" y="0" width="2" height="2" />
+          <rect x="10" y="0" width="2" height="2" />
+          <rect x="2" y="2" width="2" height="2" />
+          <rect x="6" y="2" width="4" height="2" />
+          <rect x="12" y="2" width="2" height="2" />
+          <rect x="0" y="4" width="2" height="2" />
+          <rect x="4" y="4" width="2" height="2" />
+          <rect x="6" y="4" width="4" height="2" />
+          <rect x="10" y="4" width="2" height="2" />
+          <rect x="14" y="4" width="2" height="2" />
+          <rect x="0" y="6" width="16" height="2" />
+          <rect x="2" y="8" width="4" height="2" />
+          <rect x="10" y="8" width="4" height="2" />
+        </g>
+
+        {/* CRT vignette - dark edges */}
+        <rect x="0" y="0" width="440" height="620" fill="url(#crtVignette)" />
+      </svg>
     </div>
   );
 }
