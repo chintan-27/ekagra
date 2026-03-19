@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react"
-import type { TimerState } from "../../types/timer"
+import type { TimerMode, TimerState } from "../../types/timer"
 import { getDefaultState } from "../../background/storage"
 import { computeRemaining } from "../../background/timer-engine"
 
@@ -44,5 +44,6 @@ export function useTimer() {
     pause: () => send({ type: "PAUSE_TIMER" }),
     reset: () => send({ type: "RESET_TIMER" }),
     skip: () => send({ type: "SKIP_SESSION" }),
+    setMode: (mode: TimerMode) => send({ type: "SET_MODE", mode }),
   }
 }

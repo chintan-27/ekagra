@@ -20,7 +20,22 @@ export default function TimerControls({ isRunning, onStart, onPause, onReset, on
         className="btn-play"
         onClick={isRunning ? onPause : onStart}
       >
-        {isRunning ? "Pause" : "Start"}
+        {isRunning ? (
+          <>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+              <rect x="6" y="4" width="4" height="16" rx="1" />
+              <rect x="14" y="4" width="4" height="16" rx="1" />
+            </svg>
+            Pause
+          </>
+        ) : (
+          <>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+              <polygon points="6 3 20 12 6 21 6 3" />
+            </svg>
+            Start
+          </>
+        )}
       </button>
 
       <button className="btn-ctrl" onClick={onSkip} title="Skip">

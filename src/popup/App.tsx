@@ -2,14 +2,21 @@ import { useEffect, useState } from "react"
 import { useTimer } from "./hooks/useTimer"
 import { useSettings } from "./hooks/useSettings"
 import { applyTheme } from "./styles/theme"
+import type { TimerMode } from "../types/timer"
 import TimerDisplay from "./components/TimerDisplay"
 import TimerControls from "./components/TimerControls"
 import SessionIndicator from "./components/SessionIndicator"
-import ModeLabel from "./components/ModeLabel"
+import ModeTabs from "./components/ModeTabs"
 import SettingsPanel from "./components/SettingsPanel"
 
+const modeLabels: Record<TimerMode, string> = {
+  focus: "Focus",
+  short_break: "Short Break",
+  long_break: "Long Break",
+}
+
 export default function App() {
-  const { state, remaining, start, pause, reset, skip } = useTimer()
+  const { state, remaining, start, pause, reset, skip, setMode } = useTimer()
   const { settings, updateSettings } = useSettings()
   const [showSettings, setShowSettings] = useState(false)
 
@@ -44,19 +51,27 @@ export default function App() {
         <SettingsPanel settings={settings} onUpdate={updateSettings} />
       ) : (
         <main className="timer-main">
-          <ModeLabel mode={state.mode} />
-          <TimerDisplay remaining={remaining} total={state.duration} />
-          <TimerControls
-            isRunning={state.isRunning}
-            onStart={start}
-            onPause={pause}
-            onReset={reset}
-            onSkip={skip}
-          />
-          <SessionIndicator
-            completed={state.completedSessions}
-            total={state.settings.sessionsBeforeLongBreak}
-          />
+          <ModeTabs activeMode={state.mode} onSetMode={setMode} />
+          <div className="glass-card">
+            <TimerDisplay
+              remaining={remaining}
+              total={state.duration}
+              isRunning={state.isRunning}
+              modeLabel={modeLabels[state.mode]}
+            />
+            <TimerControls
+              isRunning={state.isRunning}
+              onStart={start}
+              onPause={pause}
+              onReset={reset}
+              onSkip={skip}
+            />
+            <SessionIndicator
+              completed={state.completedSessions}
+              total={state.settings.sessionsBeforeLongBreak}
+              isRunning={state.isRunning}
+            />
+          </div>
         </main>
       )}
     </div>
