@@ -65,6 +65,19 @@ export function resetTimer(state: TimerState): TimerState {
   }
 }
 
+export function setMode(state: TimerState, mode: TimerMode): TimerState {
+  if (state.mode === mode) return state
+  const duration = getDurationForMode(mode, state.settings)
+  return {
+    ...state,
+    mode,
+    isRunning: false,
+    startTime: 0,
+    duration,
+    pausedRemaining: 0,
+  }
+}
+
 export function transitionToNextSession(state: TimerState): TimerState {
   const nextMode = getNextMode(state)
   const completedSessions = state.mode === "focus"

@@ -24,6 +24,7 @@ export type Message =
   | { type: "PAUSE_TIMER" }
   | { type: "RESET_TIMER" }
   | { type: "SKIP_SESSION" }
+  | { type: "SET_MODE"; mode: TimerMode }
   | { type: "UPDATE_SETTINGS"; settings: Partial<TimerSettings> }
   | { type: "GET_STATE" }
 
