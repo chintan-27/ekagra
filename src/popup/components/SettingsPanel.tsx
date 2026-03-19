@@ -16,12 +16,47 @@ function minutesToMs(min: number): number {
 
 const themeList = Object.entries(themes) as [ThemeName, (typeof themes)[ThemeName]][]
 
-const displayOptions: { key: TimerDisplay; label: string; icon: string }[] = [
-  { key: "ring", label: "Ring", icon: "◎" },
-  { key: "flip", label: "Flip", icon: "▦" },
-  { key: "bigNumber", label: "Big #", icon: "##" },
-  { key: "bloom", label: "Bloom", icon: "✿" },
-  { key: "analog", label: "Analog", icon: "◷" },
+const displayIcons: Record<TimerDisplay, React.ReactNode> = {
+  ring: (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <circle cx="12" cy="12" r="10" />
+      <circle cx="12" cy="12" r="4" />
+    </svg>
+  ),
+  flip: (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <rect x="3" y="4" width="7" height="16" rx="1" />
+      <rect x="14" y="4" width="7" height="16" rx="1" />
+      <line x1="3" y1="12" x2="10" y2="12" />
+      <line x1="14" y1="12" x2="21" y2="12" />
+    </svg>
+  ),
+  bigNumber: (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <text x="4" y="18" fontSize="16" fontWeight="bold" fill="currentColor" stroke="none">25</text>
+    </svg>
+  ),
+  bloom: (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <circle cx="12" cy="12" r="5" opacity="0.6" />
+      <circle cx="9" cy="9" r="5" opacity="0.4" />
+      <circle cx="15" cy="10" r="4" opacity="0.3" />
+    </svg>
+  ),
+  analog: (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <circle cx="12" cy="12" r="10" />
+      <polyline points="12 6 12 12 16 14" />
+    </svg>
+  ),
+}
+
+const displayKeys: { key: TimerDisplay; label: string }[] = [
+  { key: "ring", label: "Ring" },
+  { key: "flip", label: "Flip" },
+  { key: "bigNumber", label: "Big #" },
+  { key: "bloom", label: "Bloom" },
+  { key: "analog", label: "Analog" },
 ]
 
 export default function SettingsPanel({ settings, onUpdate }: Props) {
@@ -61,7 +96,7 @@ export default function SettingsPanel({ settings, onUpdate }: Props) {
       <div className="setting-group">
         <div className="setting-group-title">Timer Style</div>
         <div className="display-picker-row">
-          {displayOptions.map((opt) => {
+          {displayKeys.map((opt) => {
             const isActive = settings.timerDisplay === opt.key
             return (
               <button
@@ -70,7 +105,7 @@ export default function SettingsPanel({ settings, onUpdate }: Props) {
                 onClick={() => onUpdate({ timerDisplay: opt.key })}
                 title={opt.label}
               >
-                <span className="display-option-icon">{opt.icon}</span>
+                <span className="display-option-icon">{displayIcons[opt.key]}</span>
                 <span className="display-option-label">{opt.label}</span>
               </button>
             )

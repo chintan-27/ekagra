@@ -8,11 +8,11 @@ interface Props {
 }
 
 const circles = [
-  { size: 130, top: 15, left: 25 },
-  { size: 110, top: 35, left: 50 },
-  { size: 120, top: 10, left: 50 },
-  { size: 100, top: 45, left: 20 },
-  { size: 90, top: 30, left: 55 },
+  { size: 110, top: 12, left: 20 },
+  { size: 90, top: 30, left: 42 },
+  { size: 100, top: 8, left: 42 },
+  { size: 85, top: 40, left: 15 },
+  { size: 75, top: 25, left: 50 },
 ]
 
 const opacities = [0.08, 0.12, 0.1, 0.15, 0.18]
@@ -27,8 +27,8 @@ export default function BloomDisplay({
     <div
       style={{
         position: "relative",
-        width: 190,
-        height: 190,
+        width: 160,
+        height: 160,
         display: "flex",
         alignItems: "center",
         justifyContent: "center",

@@ -7,10 +7,10 @@ interface Props {
   modeLabel: string
 }
 
-const SIZE = 200
+const SIZE = 165
 const CENTER = SIZE / 2
-const MARKER_RADIUS = 88
-const ARC_RADIUS = 78
+const MARKER_RADIUS = 72
+const ARC_RADIUS = 63
 const ARC_CIRCUMFERENCE = 2 * Math.PI * ARC_RADIUS
 
 export default function AnalogDisplay({

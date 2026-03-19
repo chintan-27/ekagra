@@ -7,8 +7,8 @@ interface Props {
   modeLabel: string
 }
 
-const SIZE = 200
-const STROKE_WIDTH = 8
+const SIZE = 160
+const STROKE_WIDTH = 7
 const RADIUS = (SIZE - STROKE_WIDTH) / 2
 const CIRCUMFERENCE = 2 * Math.PI * RADIUS
 
@@ -96,7 +96,7 @@ export default function RingDisplay({
       >
         <span
           style={{
-            fontSize: "2.5rem",
+            fontSize: "2.2rem",
             fontWeight: 300,
             color: "var(--text)",
             lineHeight: 1,
