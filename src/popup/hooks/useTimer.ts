@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from "react"
-import type { TimerMode, TimerState } from "../../types/timer"
+import { useCallback, useEffect, useRef, useState } from "react"
+import type { TimerMode, TimerSettings, TimerState } from "../../types/timer"
 import { getDefaultState } from "../../background/storage"
 import { computeRemaining } from "../../background/timer-engine"
 
@@ -31,20 +31,26 @@ export function useTimer() {
     return () => cancelAnimationFrame(rafRef.current)
   }, [state.isRunning, state.startTime, state.duration, state.mode, state.pausedRemaining, state.settings])
 
-  const send = (msg: object) => {
+  const send = useCallback((msg: object) => {
     chrome.runtime.sendMessage(msg, (response) => {
       if (response?.state) setState(response.state)
     })
-  }
+  }, [])
+
+  const updateSettings = useCallback((partial: Partial<TimerSettings>) => {
+    send({ type: "UPDATE_SETTINGS", settings: partial })
+  }, [send])
 
   return {
     state,
     remaining,
+    settings: state.settings,
     start: () => send({ type: "START_TIMER" }),
     pause: () => send({ type: "PAUSE_TIMER" }),
     reset: () => send({ type: "RESET_TIMER" }),
     skip: () => send({ type: "SKIP_SESSION" }),
     goBack: () => send({ type: "GO_BACK" }),
     setMode: (mode: TimerMode) => send({ type: "SET_MODE", mode }),
+    updateSettings,
   }
 }

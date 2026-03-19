@@ -4,6 +4,7 @@ import { getDefaultState, getTimerState, setTimerState } from "./storage"
 import { getStatsData, recordFocusSession } from "./stats-storage"
 import {
   computeRemaining,
+  getDurationForMode,
   isSessionComplete,
   startTimer,
   pauseTimer,
@@ -218,16 +219,19 @@ async function handleMessage(message: Message): Promise<MessageResponse> {
       await updateBadge(state)
       break
 
-    case "UPDATE_SETTINGS":
-      state = {
-        ...state,
-        settings: { ...state.settings, ...message.settings },
+    case "UPDATE_SETTINGS": {
+      const newSettings = { ...state.settings, ...message.settings }
+      state = { ...state, settings: newSettings }
+      // If timer is idle (not running, not paused), update duration to match new settings
+      if (!state.isRunning && state.pausedRemaining === 0) {
+        state.duration = getDurationForMode(state.mode, newSettings)
       }
       await setTimerState(state)
       if (state.isRunning) {
         await createAlarmForState()
       }
       break
+    }
 
     case "GET_STATS": {
       const stats = await getStatsData()

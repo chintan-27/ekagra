@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react"
 import { useTimer } from "./hooks/useTimer"
-import { useSettings } from "./hooks/useSettings"
 import { useStats } from "./hooks/useStats"
 import { applyTheme } from "./styles/theme"
 import { getTheme } from "./themes"
@@ -48,8 +47,7 @@ const modeLabels: Record<TimerMode, string> = {
 }
 
 export default function App() {
-  const { state, remaining, start, pause, reset, skip, goBack, setMode } = useTimer()
-  const { settings, updateSettings } = useSettings()
+  const { state, remaining, settings, start, pause, reset, skip, goBack, setMode, updateSettings } = useTimer()
   const { stats, refresh: refreshStats } = useStats()
   const [activeTab, setActiveTab] = useState<Tab>("timer")
 
