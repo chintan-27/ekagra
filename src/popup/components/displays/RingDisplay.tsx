@@ -68,10 +68,11 @@ export default function RingDisplay({
           stroke="var(--primary)"
           strokeWidth={STROKE_WIDTH + 8}
           strokeLinecap="round"
-          strokeDasharray={CIRCUMFERENCE}
-          strokeDashoffset={offset}
           opacity={0.15}
-          style={{ transition: "stroke-dashoffset 0.3s ease" }}
+          style={{
+            strokeDasharray: CIRCUMFERENCE,
+            strokeDashoffset: offset,
+          }}
         />
 
         {/* Progress */}
@@ -83,9 +84,10 @@ export default function RingDisplay({
           stroke="url(#ring-gradient)"
           strokeWidth={STROKE_WIDTH}
           strokeLinecap="round"
-          strokeDasharray={CIRCUMFERENCE}
-          strokeDashoffset={offset}
-          style={{ transition: "stroke-dashoffset 0.3s ease" }}
+          style={{
+            strokeDasharray: CIRCUMFERENCE,
+            strokeDashoffset: offset,
+          }}
         />
       </svg>
 

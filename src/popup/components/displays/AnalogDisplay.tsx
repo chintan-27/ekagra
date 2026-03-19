@@ -98,13 +98,12 @@ export default function AnalogDisplay({
           stroke="var(--primary)"
           strokeWidth={8}
           strokeLinecap="round"
-          strokeDasharray={ARC_CIRCUMFERENCE}
-          strokeDashoffset={arcOffset}
           opacity={0.2}
           style={{
+            strokeDasharray: ARC_CIRCUMFERENCE,
+            strokeDashoffset: arcOffset,
             transform: "rotate(-90deg)",
             transformOrigin: "center",
-            transition: "stroke-dashoffset 0.3s ease",
           }}
         />
 
@@ -117,12 +116,11 @@ export default function AnalogDisplay({
           stroke="var(--primary)"
           strokeWidth={3}
           strokeLinecap="round"
-          strokeDasharray={ARC_CIRCUMFERENCE}
-          strokeDashoffset={arcOffset}
           style={{
+            strokeDasharray: ARC_CIRCUMFERENCE,
+            strokeDashoffset: arcOffset,
             transform: "rotate(-90deg)",
             transformOrigin: "center",
-            transition: "stroke-dashoffset 0.3s ease",
           }}
         />
       </svg>
