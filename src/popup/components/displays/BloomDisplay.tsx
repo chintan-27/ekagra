@@ -5,6 +5,8 @@ interface Props {
   total: number
   isRunning: boolean
   modeLabel: string
+  sessionNumber?: number
+  totalSessions?: number
 }
 
 const circles = [
@@ -19,9 +21,10 @@ const opacities = [0.08, 0.12, 0.1, 0.15, 0.18]
 
 export default function BloomDisplay({
   remaining,
-  total: _total,
   isRunning,
   modeLabel,
+  sessionNumber,
+  totalSessions,
 }: Props) {
   return (
     <div
@@ -99,6 +102,17 @@ export default function BloomDisplay({
         >
           {modeLabel}
         </span>
+        {sessionNumber != null && totalSessions != null && (
+          <span
+            style={{
+              fontSize: "0.55rem",
+              color: "var(--textMuted)",
+              marginTop: 4,
+            }}
+          >
+            Session {sessionNumber} of {totalSessions}
+          </span>
+        )}
       </div>
     </div>
   )

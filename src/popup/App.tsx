@@ -95,6 +95,8 @@ export default function App() {
                 total={state.duration}
                 isRunning={state.isRunning}
                 modeLabel={modeLabels[state.mode]}
+                sessionNumber={state.completedSessions + 1}
+                totalSessions={state.settings.sessionsBeforeLongBreak}
               />
               <TimerControls
                 isRunning={state.isRunning}

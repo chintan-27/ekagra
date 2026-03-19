@@ -5,6 +5,8 @@ interface Props {
   total: number
   isRunning: boolean
   modeLabel: string
+  sessionNumber?: number
+  totalSessions?: number
 }
 
 function FlipCard({ digit }: { digit: string }) {
@@ -53,8 +55,8 @@ function FlipCard({ digit }: { digit: string }) {
 export default function FlipDisplay({
   remaining,
   total,
-  isRunning: _isRunning,
-  modeLabel: _modeLabel,
+  sessionNumber,
+  totalSessions,
 }: Props) {
   const formatted = formatTime(remaining)
   const [min, sec] = formatted.split(":")
@@ -111,17 +113,29 @@ export default function FlipDisplay({
         />
       </div>
 
-      {/* Label */}
-      <span
-        style={{
-          fontSize: "0.6rem",
-          color: "var(--textMuted)",
-          textTransform: "uppercase",
-          letterSpacing: "2px",
-        }}
-      >
-        minutes &middot; seconds
-      </span>
+      {/* Label + session info */}
+      <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+        <span
+          style={{
+            fontSize: "0.6rem",
+            color: "var(--textMuted)",
+            textTransform: "uppercase",
+            letterSpacing: "2px",
+          }}
+        >
+          {Math.round(progress * 100)}%
+        </span>
+        {sessionNumber != null && totalSessions != null && (
+          <span
+            style={{
+              fontSize: "0.55rem",
+              color: "var(--textMuted)",
+            }}
+          >
+            Session {sessionNumber}/{totalSessions}
+          </span>
+        )}
+      </div>
     </div>
   )
 }

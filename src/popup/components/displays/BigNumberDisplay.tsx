@@ -5,6 +5,8 @@ interface Props {
   total: number
   isRunning: boolean
   modeLabel: string
+  sessionNumber?: number
+  totalSessions?: number
 }
 
 export default function BigNumberDisplay({
@@ -12,6 +14,8 @@ export default function BigNumberDisplay({
   total,
   isRunning,
   modeLabel,
+  sessionNumber,
+  totalSessions,
 }: Props) {
   const progress = total > 0 ? Math.max(0, Math.min(1, 1 - remaining / total)) : 0
 
@@ -60,18 +64,40 @@ export default function BigNumberDisplay({
         />
       </div>
 
-      {/* Mode label */}
-      <span
-        style={{
-          fontSize: "0.65rem",
-          fontWeight: 600,
-          textTransform: "uppercase",
-          letterSpacing: "2px",
-          color: "var(--textMuted)",
-        }}
-      >
-        {modeLabel}
-      </span>
+      {/* Mode label + progress */}
+      <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+        <span
+          style={{
+            fontSize: "0.65rem",
+            fontWeight: 600,
+            textTransform: "uppercase",
+            letterSpacing: "2px",
+            color: "var(--textMuted)",
+          }}
+        >
+          {modeLabel}
+        </span>
+        <span
+          style={{
+            fontSize: "0.6rem",
+            color: "var(--textMuted)",
+            opacity: 0.7,
+          }}
+        >
+          {Math.round(progress * 100)}%
+        </span>
+      </div>
+
+      {sessionNumber != null && totalSessions != null && (
+        <span
+          style={{
+            fontSize: "0.55rem",
+            color: "var(--textMuted)",
+          }}
+        >
+          Session {sessionNumber} of {totalSessions}
+        </span>
+      )}
     </div>
   )
 }

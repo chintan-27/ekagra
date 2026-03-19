@@ -5,6 +5,8 @@ interface Props {
   total: number
   isRunning: boolean
   modeLabel: string
+  sessionNumber?: number
+  totalSessions?: number
 }
 
 const SIZE = 160
@@ -17,6 +19,8 @@ export default function RingDisplay({
   total,
   isRunning,
   modeLabel,
+  sessionNumber,
+  totalSessions,
 }: Props) {
   const progress = total > 0 ? Math.max(0, Math.min(1, remaining / total)) : 0
   const offset = CIRCUMFERENCE * (1 - progress)
@@ -116,6 +120,17 @@ export default function RingDisplay({
         >
           {modeLabel}
         </span>
+        {sessionNumber != null && totalSessions != null && (
+          <span
+            style={{
+              fontSize: "0.55rem",
+              color: "var(--textMuted)",
+              marginTop: 4,
+            }}
+          >
+            Session {sessionNumber} of {totalSessions}
+          </span>
+        )}
       </div>
     </div>
   )

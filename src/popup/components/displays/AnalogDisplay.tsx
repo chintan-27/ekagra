@@ -5,6 +5,8 @@ interface Props {
   total: number
   isRunning: boolean
   modeLabel: string
+  sessionNumber?: number
+  totalSessions?: number
 }
 
 const SIZE = 165
@@ -16,8 +18,9 @@ const ARC_CIRCUMFERENCE = 2 * Math.PI * ARC_RADIUS
 export default function AnalogDisplay({
   remaining,
   total,
-  isRunning: _isRunning,
   modeLabel,
+  sessionNumber,
+  totalSessions,
 }: Props) {
   const progress = total > 0 ? Math.max(0, Math.min(1, remaining / total)) : 0
   const arcOffset = ARC_CIRCUMFERENCE * (1 - progress)
@@ -154,6 +157,17 @@ export default function AnalogDisplay({
         >
           {modeLabel}
         </span>
+        {sessionNumber != null && totalSessions != null && (
+          <span
+            style={{
+              fontSize: "0.55rem",
+              color: "var(--textMuted)",
+              marginTop: 4,
+            }}
+          >
+            Session {sessionNumber} of {totalSessions}
+          </span>
+        )}
       </div>
     </div>
   )

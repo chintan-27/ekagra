@@ -11,6 +11,8 @@ interface Props {
   total: number
   isRunning: boolean
   modeLabel: string
+  sessionNumber?: number
+  totalSessions?: number
 }
 
 interface DisplayProps {
@@ -18,6 +20,8 @@ interface DisplayProps {
   total: number
   isRunning: boolean
   modeLabel: string
+  sessionNumber?: number
+  totalSessions?: number
 }
 
 const displays: Record<TimerDisplay, React.FC<DisplayProps>> = {
