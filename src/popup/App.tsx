@@ -84,7 +84,7 @@ export default function App() {
               <h1 className="app-title">Ekagra</h1>
             </header>
 
-            <ModeTabs activeMode={state.mode} onSetMode={setMode} />
+            <ModeTabs activeMode={state.mode} isRunning={state.isRunning} onSetMode={setMode} />
 
             <div className="glass-card">
               <TimerDisplaySwitch

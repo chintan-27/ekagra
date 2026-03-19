@@ -9,10 +9,11 @@ const modes: { key: TimerMode; label: string }[] = [
 
 interface Props {
   activeMode: TimerMode
+  isRunning: boolean
   onSetMode: (mode: TimerMode) => void
 }
 
-export default function ModeTabs({ activeMode, onSetMode }: Props) {
+export default function ModeTabs({ activeMode, isRunning, onSetMode }: Props) {
   const containerRef = useRef<HTMLDivElement>(null)
   const [slider, setSlider] = useState({ left: 0, width: 0 })
 
@@ -31,15 +32,24 @@ export default function ModeTabs({ activeMode, onSetMode }: Props) {
         className="mode-tabs-slider"
         style={{ left: slider.left, width: slider.width }}
       />
-      {modes.map((m) => (
-        <button
-          key={m.key}
-          className={`mode-tab ${m.key === activeMode ? "active" : ""}`}
-          onClick={() => onSetMode(m.key)}
-        >
-          {m.label}
-        </button>
-      ))}
+      {modes.map((m) => {
+        const isActive = m.key === activeMode
+        const disabled = isRunning && !isActive
+        return (
+          <button
+            key={m.key}
+            className={`mode-tab ${isActive ? "active" : ""}`}
+            onClick={() => !disabled && onSetMode(m.key)}
+            style={{
+              opacity: disabled ? 0.4 : 1,
+              cursor: disabled ? "default" : "pointer",
+            }}
+            title={disabled ? "Stop timer first to switch modes" : m.label}
+          >
+            {m.label}
+          </button>
+        )
+      })}
     </div>
   )
 }

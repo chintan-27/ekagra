@@ -47,14 +47,6 @@ export default function RingDisplay({
             <stop offset="0%" stopColor="var(--accent)" />
             <stop offset="100%" stopColor="var(--primary)" />
           </linearGradient>
-          <filter id="ring-glow">
-            <feDropShadow
-              dx="0"
-              dy="0"
-              stdDeviation="4"
-              floodColor="var(--primaryGlow)"
-            />
-          </filter>
         </defs>
 
         {/* Track */}
@@ -65,6 +57,21 @@ export default function RingDisplay({
           fill="none"
           stroke="var(--trackColor)"
           strokeWidth={STROKE_WIDTH}
+        />
+
+        {/* Progress glow (wider, faint underneath) */}
+        <circle
+          cx={SIZE / 2}
+          cy={SIZE / 2}
+          r={RADIUS}
+          fill="none"
+          stroke="var(--primary)"
+          strokeWidth={STROKE_WIDTH + 8}
+          strokeLinecap="round"
+          strokeDasharray={CIRCUMFERENCE}
+          strokeDashoffset={offset}
+          opacity={0.15}
+          style={{ transition: "stroke-dashoffset 0.3s ease" }}
         />
 
         {/* Progress */}
@@ -78,7 +85,6 @@ export default function RingDisplay({
           strokeLinecap="round"
           strokeDasharray={CIRCUMFERENCE}
           strokeDashoffset={offset}
-          filter="url(#ring-glow)"
           style={{ transition: "stroke-dashoffset 0.3s ease" }}
         />
       </svg>
