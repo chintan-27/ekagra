@@ -13,165 +13,137 @@ interface Props {
 const W = 52
 const H = 68
 const HALF = H / 2
-const DUR = 600 // ms total flip duration
-const GAP = 1 // pixel gap between halves (crease)
+const DUR = 500
 
 const keyframes = `
-@keyframes flipTop {
-  0%   { transform: rotateX(0deg); }
-  100% { transform: rotateX(-90deg); }
+@keyframes foldTop {
+  0%   { transform: perspective(${H * 4}px) rotateX(0deg); }
+  100% { transform: perspective(${H * 4}px) rotateX(-90deg); }
 }
-@keyframes flipBottom {
-  0%   { transform: rotateX(90deg); }
-  100% { transform: rotateX(0deg); }
+@keyframes unfoldBottom {
+  0%   { transform: perspective(${H * 4}px) rotateX(90deg); }
+  100% { transform: perspective(${H * 4}px) rotateX(0deg); }
 }
 `
 
-/* ── Shared card-half chrome ────────────────────────────────── */
-const cardBase: React.CSSProperties = {
+const cardHalf: React.CSSProperties = {
   position: "absolute",
   left: 0,
   width: W,
   height: HALF,
   overflow: "hidden",
   backfaceVisibility: "hidden",
+  background: "var(--surface, #1a1a2e)",
 }
 
-const digitFont: React.CSSProperties = {
+const digitSpan: React.CSSProperties = {
+  display: "block",
+  width: W,
+  height: H,
   fontSize: 44,
   fontWeight: 700,
   fontFamily: "'SF Mono', 'Fira Code', 'Courier New', monospace",
   color: "var(--text)",
-  width: W,
+  lineHeight: `${H}px`,
   textAlign: "center",
-  display: "block",
-  position: "absolute",
-  left: 0,
 }
-
-/* ── Individual card ────────────────────────────────────────── */
 
 function FlipCard({ digit }: { digit: string }) {
   const [cur, setCur] = useState(digit)
   const [prev, setPrev] = useState(digit)
-  const [phase, setPhase] = useState<"idle" | "top" | "bottom">("idle")
-  const timeoutRef = useRef<ReturnType<typeof setTimeout>>(null)
+  const [phase, setPhase] = useState<"idle" | "fold" | "unfold">("idle")
+  const ref = useRef<ReturnType<typeof setTimeout>>(null)
 
   useEffect(() => {
     if (digit !== cur) {
       setPrev(cur)
       setCur(digit)
-      // Start: top half falls
-      setPhase("top")
-      if (timeoutRef.current) clearTimeout(timeoutRef.current)
-      // At halfway point, switch to bottom phase
-      timeoutRef.current = setTimeout(() => {
-        setPhase("bottom")
-        timeoutRef.current = setTimeout(() => {
-          setPhase("idle")
-        }, DUR / 2)
+      setPhase("fold")
+      if (ref.current) clearTimeout(ref.current)
+      ref.current = setTimeout(() => {
+        setPhase("unfold")
+        ref.current = setTimeout(() => setPhase("idle"), DUR / 2)
       }, DUR / 2)
     }
   }, [digit, cur])
 
-  const isFlipping = phase !== "idle"
-
   return (
-    <div
-      style={{
-        width: W,
-        height: H + GAP,
-        position: "relative",
-        perspective: 300,
-      }}
-    >
-      {/* ─── STATIC BASE: always visible behind everything ─── */}
-
-      {/* Static top: shows NEW digit (revealed as old top falls away) */}
+    <div style={{ width: W, height: H + 1, position: "relative" }}>
+      {/* ── STATIC TOP: new digit (revealed when old top folds away) ── */}
       <div
         style={{
-          ...cardBase,
+          ...cardHalf,
           top: 0,
-          background: "var(--surface, #1a1a2e)",
           borderRadius: "6px 6px 0 0",
           zIndex: 0,
         }}
       >
-        <span style={{ ...digitFont, top: 0, lineHeight: `${H}px` }}>
-          {cur}
-        </span>
+        <span style={digitSpan}>{cur}</span>
       </div>
 
-      {/* Static bottom: shows OLD digit (covered by new bottom flipping in) */}
+      {/* ── STATIC BOTTOM: shows old during fold, new when done ── */}
       <div
         style={{
-          ...cardBase,
-          top: HALF + GAP,
-          background: "var(--surface, #1a1a2e)",
+          ...cardHalf,
+          top: HALF + 1,
           borderRadius: "0 0 6px 6px",
           zIndex: 0,
         }}
       >
-        <span style={{ ...digitFont, bottom: 0, lineHeight: `${H}px` }}>
-          {isFlipping ? prev : cur}
+        <span style={{ ...digitSpan, marginTop: -HALF }}>
+          {phase === "fold" ? prev : cur}
         </span>
       </div>
 
-      {/* ─── ANIMATED TOP HALF: old digit, falls forward ─── */}
-      {(phase === "top") && (
+      {/* ── ANIMATED TOP: old digit, folds down and away ── */}
+      {phase === "fold" && (
         <div
           style={{
-            ...cardBase,
+            ...cardHalf,
             top: 0,
-            background: "var(--surface, #1a1a2e)",
             borderRadius: "6px 6px 0 0",
             transformOrigin: "center bottom",
-            animation: `flipTop ${DUR / 2}ms ease-in forwards`,
+            animation: `foldTop ${DUR / 2}ms ease-in forwards`,
             zIndex: 2,
           }}
         >
-          <span style={{ ...digitFont, top: 0, lineHeight: `${H}px` }}>
-            {prev}
-          </span>
+          <span style={digitSpan}>{prev}</span>
         </div>
       )}
 
-      {/* ─── ANIMATED BOTTOM HALF: new digit, swings up into place ─── */}
-      {(phase === "bottom") && (
+      {/* ── ANIMATED BOTTOM: new digit, unfolds into place ── */}
+      {phase === "unfold" && (
         <div
           style={{
-            ...cardBase,
-            top: HALF + GAP,
-            background: "var(--surface, #1a1a2e)",
+            ...cardHalf,
+            top: HALF + 1,
             borderRadius: "0 0 6px 6px",
             transformOrigin: "center top",
-            animation: `flipBottom ${DUR / 2}ms ease-out forwards`,
+            animation: `unfoldBottom ${DUR / 2}ms ease-out forwards`,
             zIndex: 2,
           }}
         >
-          <span style={{ ...digitFont, bottom: 0, lineHeight: `${H}px` }}>
+          <span style={{ ...digitSpan, marginTop: -HALF }}>
             {cur}
           </span>
         </div>
       )}
 
-      {/* Crease line */}
+      {/* Crease */}
       <div
         style={{
           position: "absolute",
           top: HALF,
           left: 0,
           width: "100%",
-          height: GAP,
-          background: "rgba(0,0,0,0.25)",
+          height: 1,
+          background: "rgba(0,0,0,0.2)",
           zIndex: 3,
         }}
       />
     </div>
   )
 }
-
-/* ── Main display ───────────────────────────────────────────── */
 
 export default function FlipDisplay({
   remaining,
