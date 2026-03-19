@@ -3,7 +3,7 @@
   "name": "Ekagra",
   "description": "A calm, privacy-first Pomodoro timer",
   "version": "1.0.0",
-  "permissions": ["storage", "alarms", "notifications"],
+  "permissions": ["storage", "alarms", "notifications", "offscreen"],
   "action": {
     "default_popup": "src/popup/index.html",
     "default_icon": {

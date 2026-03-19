@@ -56,17 +56,6 @@ export default function AnalogDisplay({
       }}
     >
       <svg width={SIZE} height={SIZE}>
-        <defs>
-          <filter id="analog-arc-glow">
-            <feDropShadow
-              dx="0"
-              dy="0"
-              stdDeviation="3"
-              floodColor="var(--primaryGlow)"
-            />
-          </filter>
-        </defs>
-
         {/* Minor dot markers */}
         {minorMarkers.map((m) => (
           <circle
@@ -100,6 +89,25 @@ export default function AnalogDisplay({
           opacity={0.3}
         />
 
+        {/* Progress arc glow (wider, faint underneath) */}
+        <circle
+          cx={CENTER}
+          cy={CENTER}
+          r={ARC_RADIUS}
+          fill="none"
+          stroke="var(--primary)"
+          strokeWidth={8}
+          strokeLinecap="round"
+          strokeDasharray={ARC_CIRCUMFERENCE}
+          strokeDashoffset={arcOffset}
+          opacity={0.2}
+          style={{
+            transform: "rotate(-90deg)",
+            transformOrigin: "center",
+            transition: "stroke-dashoffset 0.3s ease",
+          }}
+        />
+
         {/* Progress arc */}
         <circle
           cx={CENTER}
@@ -111,7 +119,6 @@ export default function AnalogDisplay({
           strokeLinecap="round"
           strokeDasharray={ARC_CIRCUMFERENCE}
           strokeDashoffset={arcOffset}
-          filter="url(#analog-arc-glow)"
           style={{
             transform: "rotate(-90deg)",
             transformOrigin: "center",

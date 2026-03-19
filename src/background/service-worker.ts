@@ -13,6 +13,25 @@ import {
   transitionToNextSession,
 } from "./timer-engine"
 
+async function playSound(): Promise<void> {
+  try {
+    // Create offscreen document if it doesn't exist
+    const existingContexts = await chrome.runtime.getContexts({
+      contextTypes: [chrome.runtime.ContextType.OFFSCREEN_DOCUMENT as any],
+    })
+    if (existingContexts.length === 0) {
+      await chrome.offscreen.createDocument({
+        url: chrome.runtime.getURL("offscreen.html"),
+        reasons: [chrome.offscreen.Reason.AUDIO_PLAYBACK],
+        justification: "Play session complete chime",
+      })
+    }
+    chrome.runtime.sendMessage({ type: "PLAY_SOUND" })
+  } catch {
+    // Silently fail — sound is non-critical
+  }
+}
+
 function getNotificationDetails(mode: string): { title: string; message: string } {
   switch (mode) {
     case "focus":
@@ -87,8 +106,12 @@ async function handleSessionComplete(): Promise<void> {
     title,
     message,
     priority: 2,
-    silent: !state.settings.sound,
+    silent: true, // We handle sound ourselves
   })
+
+  if (state.settings.sound) {
+    await playSound()
+  }
 
   if (nextState.isRunning) {
     await createAlarmForState()
