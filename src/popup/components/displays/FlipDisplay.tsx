@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useState } from "react"
 import { formatTime } from "../../../utils/format-time"
 
 interface Props {
@@ -12,140 +12,82 @@ interface Props {
 
 const W = 52
 const H = 68
-const HALF = H / 2
 const FONT = 42
-const DURATION = 400
-
-const digitFont: React.CSSProperties = {
-  fontSize: FONT,
-  fontWeight: 700,
-  color: "var(--text)",
-  fontFamily: "'SF Mono', 'Fira Code', 'Courier New', monospace",
-  lineHeight: 1,
-}
-
-const halfBase: React.CSSProperties = {
-  position: "absolute",
-  width: W,
-  height: HALF,
-  overflow: "hidden",
-  background: "var(--surface, #1a1a2e)",
-}
 
 const keyframes = `
-@keyframes flipTop {
-  0%   { transform: rotateX(0deg); }
-  100% { transform: rotateX(-90deg); }
+@keyframes slideOut {
+  from { transform: translateY(0); opacity: 1; }
+  to   { transform: translateY(16px); opacity: 0; }
 }
-@keyframes flipBottom {
-  0%   { transform: rotateX(90deg); }
-  100% { transform: rotateX(0deg); }
+@keyframes slideIn {
+  from { transform: translateY(-16px); opacity: 0; }
+  to   { transform: translateY(0); opacity: 1; }
 }
 `
 
-function HalfDigit({
-  digit,
-  isTop,
-  style,
-}: {
-  digit: string
-  isTop: boolean
-  style?: React.CSSProperties
-}) {
-  return (
-    <div
-      style={{
-        ...halfBase,
-        top: isTop ? 0 : HALF + 1,
-        borderRadius: isTop ? "6px 6px 0 0" : "0 0 6px 6px",
-        boxShadow: isTop
-          ? "0 1px 2px rgba(0,0,0,0.15)"
-          : "0 3px 8px rgba(0,0,0,0.25)",
-        ...style,
-      }}
-    >
-      <span
-        style={{
-          ...digitFont,
-          position: "absolute",
-          left: "50%",
-          transform: "translateX(-50%)",
-          top: isTop ? HALF - FONT * 0.38 : -(FONT * 0.38),
-        }}
-      >
-        {digit}
-      </span>
-    </div>
-  )
-}
-
 function FlipCard({ digit }: { digit: string }) {
-  const [cur, setCur] = useState(digit)
-  const [prev, setPrev] = useState(digit)
-  const [flipping, setFlipping] = useState(false)
-  const timer = useRef<ReturnType<typeof setTimeout>>(null)
+  const [display, setDisplay] = useState(digit)
+  const [anim, setAnim] = useState("")
 
   useEffect(() => {
-    if (digit !== cur) {
-      setPrev(cur)
-      setCur(digit)
-      setFlipping(true)
-      if (timer.current) clearTimeout(timer.current)
-      timer.current = setTimeout(() => setFlipping(false), DURATION)
+    if (digit !== display) {
+      // Start exit animation
+      setAnim("slideOut 0.15s ease-in forwards")
+      const t = setTimeout(() => {
+        setDisplay(digit)
+        setAnim("slideIn 0.15s ease-out forwards")
+        const t2 = setTimeout(() => setAnim(""), 150)
+        return () => clearTimeout(t2)
+      }, 140)
+      return () => clearTimeout(t)
     }
-  }, [digit, cur])
+  }, [digit, display])
 
   return (
     <div
       style={{
         width: W,
-        height: H + 1,
+        height: H,
+        background: "var(--surface, #1a1a2e)",
+        borderRadius: 8,
         position: "relative",
+        boxShadow: "0 4px 12px rgba(0,0,0,0.25)",
+        overflow: "hidden",
       }}
     >
-      {/* Static top half — always shows NEW digit */}
-      <HalfDigit digit={cur} isTop />
-
-      {/* Static bottom half — shows NEW digit (revealed after flip) */}
-      <HalfDigit digit={cur} isTop={false} />
-
-      {flipping && (
-        <>
-          {/* Animated top half — OLD digit, flips down and away */}
-          <HalfDigit
-            digit={prev}
-            isTop
-            style={{
-              zIndex: 2,
-              transformOrigin: "bottom center",
-              animation: `flipTop ${DURATION}ms ease-in forwards`,
-              backfaceVisibility: "hidden",
-            }}
-          />
-          {/* Animated bottom half — NEW digit, flips in from top */}
-          <HalfDigit
-            digit={cur}
-            isTop={false}
-            style={{
-              zIndex: 2,
-              transformOrigin: "top center",
-              animation: `flipBottom ${DURATION}ms ease-out forwards`,
-              backfaceVisibility: "hidden",
-            }}
-          />
-        </>
-      )}
-
-      {/* Center line / crease */}
+      <div
+        style={{
+          width: "100%",
+          height: "100%",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          animation: anim || "none",
+        }}
+      >
+        <span
+          style={{
+            fontSize: FONT,
+            fontWeight: 700,
+            color: "var(--text)",
+            fontFamily: "'SF Mono', 'Fira Code', 'Courier New', monospace",
+            lineHeight: 1,
+          }}
+        >
+          {display}
+        </span>
+      </div>
+      {/* Center crease */}
       <div
         style={{
           position: "absolute",
-          top: HALF,
+          top: "50%",
           left: 0,
           width: "100%",
           height: 1,
-          background: "rgba(0,0,0,0.35)",
-          zIndex: 3,
+          background: "rgba(0,0,0,0.25)",
+          transform: "translateY(-0.5px)",
+          pointerEvents: "none",
         }}
       />
     </div>
@@ -175,14 +117,7 @@ export default function FlipDisplay({
       <style>{keyframes}</style>
 
       {/* Flip cards row */}
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: 6,
-          perspective: 300,
-        }}
-      >
+      <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
         <FlipCard digit={digits[0]} />
         <FlipCard digit={digits[1]} />
         <span
