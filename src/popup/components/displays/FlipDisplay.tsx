@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { formatTime } from "../../../utils/format-time"
 
 interface Props {
@@ -12,82 +12,149 @@ interface Props {
 
 const W = 52
 const H = 68
-const FONT = 42
+const HALF = H / 2
+const REST = 6 // rest angle in degrees for 3D depth
+const DUR = 450 // ms
 
 const keyframes = `
-@keyframes slideOut {
-  from { transform: translateY(0); opacity: 1; }
-  to   { transform: translateY(16px); opacity: 0; }
+@keyframes flipTopDown {
+  0%   { transform: rotateX(-${REST}deg); }
+  100% { transform: rotateX(${180 - REST}deg); }
 }
-@keyframes slideIn {
-  from { transform: translateY(-16px); opacity: 0; }
-  to   { transform: translateY(0); opacity: 1; }
+@keyframes flipBottomUp {
+  0%   { transform: rotateX(${-(180 - REST)}deg); }
+  100% { transform: rotateX(${REST}deg); }
 }
 `
 
+// Shared half styles
+const halfStyle: React.CSSProperties = {
+  position: "absolute",
+  left: 0,
+  width: W,
+  height: HALF,
+  overflow: "hidden",
+  textAlign: "center",
+  backfaceVisibility: "hidden",
+  transformStyle: "preserve-3d",
+}
+
+const fontStyle: React.CSSProperties = {
+  fontSize: 44,
+  fontWeight: 700,
+  color: "var(--text)",
+  fontFamily: "'SF Mono', 'Fira Code', 'Courier New', monospace",
+  display: "block",
+  width: W,
+}
+
+function TopHalf({ digit, style }: { digit: string; style?: React.CSSProperties }) {
+  return (
+    <div
+      style={{
+        ...halfStyle,
+        top: 0,
+        background: "var(--surface, #1a1a2e)",
+        borderRadius: "8px 8px 0 0",
+        transformOrigin: "50% 100%",
+        transform: `rotateX(-${REST}deg)`,
+        boxShadow: "0 1px 3px rgba(0,0,0,0.15) inset",
+        ...style,
+      }}
+    >
+      {/* line-height = full height so only top half of text is visible */}
+      <span style={{ ...fontStyle, lineHeight: `${H + 2}px` }}>{digit}</span>
+    </div>
+  )
+}
+
+function BottomHalf({ digit, style }: { digit: string; style?: React.CSSProperties }) {
+  return (
+    <div
+      style={{
+        ...halfStyle,
+        top: HALF + 1,
+        background: "var(--surface, #1a1a2e)",
+        borderRadius: "0 0 8px 8px",
+        transformOrigin: "50% 0%",
+        transform: `rotateX(${REST}deg)`,
+        boxShadow: "0 4px 10px rgba(0,0,0,0.2)",
+        ...style,
+      }}
+    >
+      {/* line-height ≈ 0 so only bottom half of text is visible */}
+      <span style={{ ...fontStyle, lineHeight: "2px" }}>{digit}</span>
+    </div>
+  )
+}
+
 function FlipCard({ digit }: { digit: string }) {
-  const [display, setDisplay] = useState(digit)
-  const [anim, setAnim] = useState("")
+  const [cur, setCur] = useState(digit)
+  const [prev, setPrev] = useState(digit)
+  const [flipping, setFlipping] = useState(false)
+  const timer = useRef<ReturnType<typeof setTimeout>>(null)
 
   useEffect(() => {
-    if (digit !== display) {
-      // Start exit animation
-      setAnim("slideOut 0.15s ease-in forwards")
-      const t = setTimeout(() => {
-        setDisplay(digit)
-        setAnim("slideIn 0.15s ease-out forwards")
-        const t2 = setTimeout(() => setAnim(""), 150)
-        return () => clearTimeout(t2)
-      }, 140)
-      return () => clearTimeout(t)
+    if (digit !== cur) {
+      setPrev(cur)
+      setCur(digit)
+      setFlipping(true)
+      if (timer.current) clearTimeout(timer.current)
+      timer.current = setTimeout(() => setFlipping(false), DUR)
     }
-  }, [digit, display])
+  }, [digit, cur])
 
   return (
     <div
       style={{
         width: W,
-        height: H,
-        background: "var(--surface, #1a1a2e)",
-        borderRadius: 8,
+        height: H + 1,
         position: "relative",
-        boxShadow: "0 4px 12px rgba(0,0,0,0.25)",
-        overflow: "hidden",
+        perspective: H * 3,
+        transformStyle: "preserve-3d",
       }}
     >
-      <div
-        style={{
-          width: "100%",
-          height: "100%",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          animation: anim || "none",
-        }}
-      >
-        <span
+      {/* Layer 1: Static new digit (both halves, sits behind animations) */}
+      <TopHalf digit={cur} />
+      <BottomHalf digit={cur} />
+
+      {/* Layer 2: Static old bottom half (visible until new bottom flips over it) */}
+      {flipping && (
+        <BottomHalf digit={prev} style={{ zIndex: 1 }} />
+      )}
+
+      {/* Layer 3: Animated old top half — flips down and away */}
+      {flipping && (
+        <TopHalf
+          digit={prev}
           style={{
-            fontSize: FONT,
-            fontWeight: 700,
-            color: "var(--text)",
-            fontFamily: "'SF Mono', 'Fira Code', 'Courier New', monospace",
-            lineHeight: 1,
+            zIndex: 2,
+            animation: `flipTopDown ${DUR}ms ease-in forwards`,
           }}
-        >
-          {display}
-        </span>
-      </div>
-      {/* Center crease */}
+        />
+      )}
+
+      {/* Layer 4: Animated new bottom half — flips up into place */}
+      {flipping && (
+        <BottomHalf
+          digit={cur}
+          style={{
+            zIndex: 2,
+            animation: `flipBottomUp ${DUR}ms ease-out forwards`,
+          }}
+        />
+      )}
+
+      {/* Crease line */}
       <div
         style={{
           position: "absolute",
-          top: "50%",
+          top: HALF,
           left: 0,
           width: "100%",
           height: 1,
-          background: "rgba(0,0,0,0.25)",
-          transform: "translateY(-0.5px)",
-          pointerEvents: "none",
+          background: "rgba(0,0,0,0.3)",
+          zIndex: 3,
         }}
       />
     </div>
@@ -116,7 +183,6 @@ export default function FlipDisplay({
     >
       <style>{keyframes}</style>
 
-      {/* Flip cards row */}
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
         <FlipCard digit={digits[0]} />
         <FlipCard digit={digits[1]} />
@@ -157,7 +223,6 @@ export default function FlipDisplay({
         />
       </div>
 
-      {/* Label + session info */}
       <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
         <span
           style={{
@@ -170,12 +235,7 @@ export default function FlipDisplay({
           {Math.round(progress * 100)}%
         </span>
         {sessionNumber != null && totalSessions != null && (
-          <span
-            style={{
-              fontSize: "0.55rem",
-              color: "var(--textMuted)",
-            }}
-          >
+          <span style={{ fontSize: "0.55rem", color: "var(--textMuted)" }}>
             Session {sessionNumber}/{totalSessions}
           </span>
         )}
