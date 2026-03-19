@@ -10,82 +10,144 @@ interface Props {
   totalSessions?: number
 }
 
-const cardStyle: React.CSSProperties = {
-  width: 56,
-  height: 72,
-  position: "relative",
-  perspective: 200,
-}
+const W = 52
+const H = 68
+const HALF = H / 2
+const FONT = 42
+const DURATION = 400
 
-const faceStyle: React.CSSProperties = {
-  position: "absolute",
-  inset: 0,
-  background: "var(--surface, #1a1a2e)",
-  borderRadius: 8,
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  boxShadow: "0 4px 12px rgba(0,0,0,0.25)",
-  overflow: "hidden",
-  backfaceVisibility: "hidden",
-}
-
-const digitStyle: React.CSSProperties = {
-  fontSize: 44,
+const digitFont: React.CSSProperties = {
+  fontSize: FONT,
   fontWeight: 700,
   color: "var(--text)",
   fontFamily: "'SF Mono', 'Fira Code', 'Courier New', monospace",
   lineHeight: 1,
 }
 
-const creaseStyle: React.CSSProperties = {
+const halfBase: React.CSSProperties = {
   position: "absolute",
-  top: "50%",
-  left: 0,
-  width: "100%",
-  height: 1,
-  background: "rgba(0,0,0,0.3)",
-  transform: "translateY(-50%)",
+  width: W,
+  height: HALF,
+  overflow: "hidden",
+  background: "var(--surface, #1a1a2e)",
+}
+
+const keyframes = `
+@keyframes flipTop {
+  0%   { transform: rotateX(0deg); }
+  100% { transform: rotateX(-90deg); }
+}
+@keyframes flipBottom {
+  0%   { transform: rotateX(90deg); }
+  100% { transform: rotateX(0deg); }
+}
+`
+
+function HalfDigit({
+  digit,
+  isTop,
+  style,
+}: {
+  digit: string
+  isTop: boolean
+  style?: React.CSSProperties
+}) {
+  return (
+    <div
+      style={{
+        ...halfBase,
+        top: isTop ? 0 : HALF + 1,
+        borderRadius: isTop ? "6px 6px 0 0" : "0 0 6px 6px",
+        boxShadow: isTop
+          ? "0 1px 2px rgba(0,0,0,0.15)"
+          : "0 3px 8px rgba(0,0,0,0.25)",
+        ...style,
+      }}
+    >
+      <span
+        style={{
+          ...digitFont,
+          position: "absolute",
+          left: "50%",
+          transform: "translateX(-50%)",
+          top: isTop ? HALF - FONT * 0.38 : -(FONT * 0.38),
+        }}
+      >
+        {digit}
+      </span>
+    </div>
+  )
 }
 
 function FlipCard({ digit }: { digit: string }) {
-  const [current, setCurrent] = useState(digit)
-  const [previous, setPrevious] = useState(digit)
+  const [cur, setCur] = useState(digit)
+  const [prev, setPrev] = useState(digit)
   const [flipping, setFlipping] = useState(false)
-  const timeoutRef = useRef<ReturnType<typeof setTimeout>>(null)
+  const timer = useRef<ReturnType<typeof setTimeout>>(null)
 
   useEffect(() => {
-    if (digit !== current) {
-      setPrevious(current)
-      setCurrent(digit)
+    if (digit !== cur) {
+      setPrev(cur)
+      setCur(digit)
       setFlipping(true)
-      if (timeoutRef.current) clearTimeout(timeoutRef.current)
-      timeoutRef.current = setTimeout(() => setFlipping(false), 350)
+      if (timer.current) clearTimeout(timer.current)
+      timer.current = setTimeout(() => setFlipping(false), DURATION)
     }
-  }, [digit, current])
+  }, [digit, cur])
 
   return (
-    <div style={cardStyle}>
-      {/* Static base: shows new digit */}
-      <div style={faceStyle}>
-        <span style={digitStyle}>{current}</span>
-        <div style={creaseStyle} />
-      </div>
+    <div
+      style={{
+        width: W,
+        height: H + 1,
+        position: "relative",
+      }}
+    >
+      {/* Static top half — always shows NEW digit */}
+      <HalfDigit digit={cur} isTop />
 
-      {/* Flipping panel: old digit flips away */}
+      {/* Static bottom half — shows NEW digit (revealed after flip) */}
+      <HalfDigit digit={cur} isTop={false} />
+
       {flipping && (
-        <div
-          style={{
-            ...faceStyle,
-            animation: "flipDown 0.35s ease-in forwards",
-            transformOrigin: "bottom center",
-            zIndex: 2,
-          }}
-        >
-          <span style={digitStyle}>{previous}</span>
-          <div style={creaseStyle} />
-        </div>
+        <>
+          {/* Animated top half — OLD digit, flips down and away */}
+          <HalfDigit
+            digit={prev}
+            isTop
+            style={{
+              zIndex: 2,
+              transformOrigin: "bottom center",
+              animation: `flipTop ${DURATION}ms ease-in forwards`,
+              backfaceVisibility: "hidden",
+            }}
+          />
+          {/* Animated bottom half — NEW digit, flips in from top */}
+          <HalfDigit
+            digit={cur}
+            isTop={false}
+            style={{
+              zIndex: 2,
+              transformOrigin: "top center",
+              animation: `flipBottom ${DURATION}ms ease-out forwards`,
+              backfaceVisibility: "hidden",
+            }}
+          />
+        </>
       )}
+
+      {/* Center line / crease */}
+      <div
+        style={{
+          position: "absolute",
+          top: HALF,
+          left: 0,
+          width: "100%",
+          height: 1,
+          background: "rgba(0,0,0,0.35)",
+          zIndex: 3,
+        }}
+      />
     </div>
   )
 }
@@ -110,16 +172,17 @@ export default function FlipDisplay({
         gap: 16,
       }}
     >
-      {/* Keyframe injection */}
-      <style>{`
-        @keyframes flipDown {
-          0% { transform: rotateX(0deg); opacity: 1; }
-          100% { transform: rotateX(-90deg); opacity: 0; }
-        }
-      `}</style>
+      <style>{keyframes}</style>
 
       {/* Flip cards row */}
-      <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: 6,
+          perspective: 300,
+        }}
+      >
         <FlipCard digit={digits[0]} />
         <FlipCard digit={digits[1]} />
         <span
