@@ -8,6 +8,7 @@ import {
   pauseTimer,
   resetTimer,
   setMode,
+  goBack,
   transitionToNextSession,
 } from "./timer-engine"
 
@@ -153,6 +154,14 @@ async function handleMessage(message: Message): Promise<MessageResponse> {
       } else {
         await chrome.alarms.clear(ALARM_NAME)
       }
+      break
+
+    case "GO_BACK":
+      state = goBack(state)
+      await setTimerState(state)
+      await chrome.alarms.clear(ALARM_NAME)
+      await chrome.alarms.clear(BADGE_ALARM_NAME)
+      await updateBadge(state)
       break
 
     case "SET_MODE":

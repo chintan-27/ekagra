@@ -78,6 +78,37 @@ export function setMode(state: TimerState, mode: TimerMode): TimerState {
   }
 }
 
+export function goBack(state: TimerState): TimerState {
+  let prevMode: TimerMode
+  let completedSessions = state.completedSessions
+
+  if (state.mode === "focus") {
+    // Going back from focus → previous break
+    if (completedSessions > 0) {
+      completedSessions -= 1
+      prevMode = completedSessions % state.settings.sessionsBeforeLongBreak === 0 && completedSessions > 0
+        ? "long_break"
+        : "short_break"
+    } else {
+      return state // nothing to go back to
+    }
+  } else {
+    // Going back from break → focus
+    prevMode = "focus"
+  }
+
+  const duration = getDurationForMode(prevMode, state.settings)
+  return {
+    ...state,
+    mode: prevMode,
+    completedSessions,
+    isRunning: false,
+    startTime: 0,
+    duration,
+    pausedRemaining: 0,
+  }
+}
+
 export function transitionToNextSession(state: TimerState): TimerState {
   const nextMode = getNextMode(state)
   const completedSessions = state.mode === "focus"

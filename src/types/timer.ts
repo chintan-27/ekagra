@@ -1,5 +1,13 @@
 export type TimerMode = "focus" | "short_break" | "long_break"
 
+export type TimerDisplay = "ring" | "flip" | "bigNumber" | "bloom" | "analog"
+
+export type ThemeName =
+  | "sunrise" | "meadow" | "ocean"
+  | "aurora" | "zen" | "neon"
+  | "retro" | "brutalist" | "coral"
+  | "analogLux" | "glass"
+
 export interface TimerSettings {
   focusDuration: number      // milliseconds
   shortBreak: number         // milliseconds
@@ -7,6 +15,8 @@ export interface TimerSettings {
   sessionsBeforeLongBreak: number
   autoStart: boolean
   sound: boolean
+  timerDisplay: TimerDisplay
+  theme: ThemeName
 }
 
 export interface TimerState {
@@ -24,6 +34,7 @@ export type Message =
   | { type: "PAUSE_TIMER" }
   | { type: "RESET_TIMER" }
   | { type: "SKIP_SESSION" }
+  | { type: "GO_BACK" }
   | { type: "SET_MODE"; mode: TimerMode }
   | { type: "UPDATE_SETTINGS"; settings: Partial<TimerSettings> }
   | { type: "GET_STATE" }

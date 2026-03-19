@@ -7,6 +7,8 @@ export const DEFAULT_SETTINGS: TimerSettings = {
   sessionsBeforeLongBreak: 4,
   autoStart: false,
   sound: true,
+  timerDisplay: "ring",
+  theme: "sunrise",
 }
 
 export const STORAGE_KEY = "ekagra_timer_state"
