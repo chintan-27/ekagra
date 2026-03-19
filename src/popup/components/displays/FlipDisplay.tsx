@@ -28,7 +28,7 @@ const cardHalf: React.CSSProperties = {
   width: W,
   height: HALF,
   overflow: "hidden",
-  background: "var(--surface, #1a1a2e)",
+  background: "var(--flipBg, #1a1a2e)",
 }
 
 const digitText: React.CSSProperties = {

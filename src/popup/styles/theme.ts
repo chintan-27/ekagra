@@ -26,6 +26,7 @@ export function applyTheme(themeName: ThemeName, mode: TimerMode): void {
 
   root.style.setProperty("--isDark", theme.isDark ? "1" : "0")
   root.style.setProperty("--trackColor", theme.isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.06)")
+  root.style.setProperty("--flipBg", theme.isDark ? "#1e1e2e" : "#e8e8ec")
   root.style.setProperty("--headingFont", theme.headingFont)
   root.style.setProperty("--bodyFont", theme.bodyFont)
   root.setAttribute("data-theme-mode", theme.isDark ? "dark" : "light")
