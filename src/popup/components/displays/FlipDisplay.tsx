@@ -47,6 +47,7 @@ function FlipCard({ digit }: { digit: string }) {
   const [cur, setCur] = useState(digit)
   const [prev, setPrev] = useState(digit)
   const [flipping, setFlipping] = useState(false)
+  const [bottomDigit, setBottomDigit] = useState(digit)
   const timerRef = useRef<ReturnType<typeof setTimeout>>(null)
   const flipKey = useRef(0)
 
@@ -55,22 +56,26 @@ function FlipCard({ digit }: { digit: string }) {
       setPrev(cur)
       setCur(digit)
       setFlipping(true)
+      // Bottom stays as old digit — switches when fold reaches 90°
       flipKey.current++
       if (timerRef.current) clearTimeout(timerRef.current)
-      timerRef.current = setTimeout(() => setFlipping(false), DUR + 50)
+      timerRef.current = setTimeout(() => {
+        setBottomDigit(digit)
+        setFlipping(false)
+      }, DUR)
     }
   }, [digit, cur])
 
   return (
     <div style={{ width: W, height: H + 1, position: "relative" }}>
-      {/* Static top half — always shows NEW digit */}
+      {/* Static top half — shows NEW digit (revealed as old top folds away) */}
       <div style={{ ...cardHalf, top: 0, borderRadius: "6px 6px 0 0" }}>
         <span style={digitText}>{cur}</span>
       </div>
 
-      {/* Static bottom half — always shows NEW digit */}
+      {/* Static bottom half — shows OLD during fold, NEW after */}
       <div style={{ ...cardHalf, top: HALF + 1, borderRadius: "0 0 6px 6px" }}>
-        <span style={{ ...digitText, marginTop: -HALF }}>{cur}</span>
+        <span style={{ ...digitText, marginTop: -HALF }}>{bottomDigit}</span>
       </div>
 
       {/* Animated flap: OLD digit top half folds down and away */}
