@@ -9,8 +9,11 @@ export const DEFAULT_SETTINGS: TimerSettings = {
   sound: true,
   timerDisplay: "ring",
   theme: "sunrise",
+  dailyGoal: 120,
+  breakReminder: true,
 }
 
 export const STORAGE_KEY = "ekagra_timer_state"
 export const ALARM_NAME = "ekagra_timer_alarm"
 export const BADGE_ALARM_NAME = "ekagra_badge_update"
+export const BREAK_REMINDER_ALARM = "ekagra_break_reminder"

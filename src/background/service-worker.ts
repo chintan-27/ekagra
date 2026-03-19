@@ -1,5 +1,5 @@
 import type { Message, MessageResponse } from "../types/timer"
-import { ALARM_NAME, BADGE_ALARM_NAME } from "../utils/constants"
+import { ALARM_NAME, BADGE_ALARM_NAME, BREAK_REMINDER_ALARM } from "../utils/constants"
 import { getDefaultState, getTimerState, setTimerState } from "./storage"
 import { getStatsData, recordFocusSession } from "./stats-storage"
 import {
@@ -47,11 +47,20 @@ async function updateBadge(state: { isRunning: boolean; mode: string }): Promise
 async function createAlarmForState(): Promise<void> {
   const state = await getTimerState()
   await chrome.alarms.clear(ALARM_NAME)
+  await chrome.alarms.clear(BREAK_REMINDER_ALARM)
   if (state.isRunning) {
     const remaining = computeRemaining(state)
     if (remaining > 0) {
       chrome.alarms.create(ALARM_NAME, { delayInMinutes: remaining / 60000 })
       chrome.alarms.create(BADGE_ALARM_NAME, { periodInMinutes: 1 })
+
+      // Schedule break reminder 30s before break ends
+      const isBreak = state.mode === "short_break" || state.mode === "long_break"
+      if (isBreak && state.settings.breakReminder && remaining > 30000) {
+        chrome.alarms.create(BREAK_REMINDER_ALARM, {
+          delayInMinutes: (remaining - 30000) / 60000,
+        })
+      }
     }
   } else {
     await chrome.alarms.clear(BADGE_ALARM_NAME)
@@ -113,6 +122,14 @@ chrome.alarms.onAlarm.addListener(async (alarm) => {
   } else if (alarm.name === BADGE_ALARM_NAME) {
     const state = await getTimerState()
     await updateBadge(state)
+  } else if (alarm.name === BREAK_REMINDER_ALARM) {
+    chrome.notifications.create("ekagra_break_reminder", {
+      type: "basic",
+      iconUrl: chrome.runtime.getURL("public/icons/icon-128.png"),
+      title: "Break ending soon",
+      message: "30 seconds left — get ready to focus!",
+      priority: 1,
+    })
   }
 })
 

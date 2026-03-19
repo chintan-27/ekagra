@@ -191,6 +191,30 @@ export default function SettingsPanel({ settings, onUpdate }: Props) {
             <span className="toggle-track" />
           </div>
         </label>
+
+        <label className="setting-row">
+          <span className="setting-label">Daily focus goal (min)</span>
+          <input
+            className="setting-input"
+            type="number"
+            min={10}
+            max={480}
+            value={settings.dailyGoal}
+            onChange={(e) => onUpdate({ dailyGoal: Number(e.target.value) })}
+          />
+        </label>
+
+        <label className="setting-row">
+          <span className="setting-label">Break reminder</span>
+          <div className="toggle-switch">
+            <input
+              type="checkbox"
+              checked={settings.breakReminder}
+              onChange={(e) => onUpdate({ breakReminder: e.target.checked })}
+            />
+            <span className="toggle-track" />
+          </div>
+        </label>
       </div>
     </div>
   )

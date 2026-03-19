@@ -17,6 +17,8 @@ export interface TimerSettings {
   sound: boolean
   timerDisplay: TimerDisplay
   theme: ThemeName
+  dailyGoal: number          // minutes (default: 120)
+  breakReminder: boolean     // show notification 30s before break ends (default: true)
 }
 
 export interface TimerState {
