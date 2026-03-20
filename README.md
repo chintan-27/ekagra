@@ -20,7 +20,7 @@ A calm, privacy-first Pomodoro timer — Chrome extension built with Manifest V3
 
 ### Chrome Web Store
 
-Coming soon.
+Currently under review — link will be added once approved.
 
 ### Download (no coding required)
 
