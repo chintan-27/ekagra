@@ -22,7 +22,18 @@ A calm, privacy-first Pomodoro timer — Chrome extension built with Manifest V3
 
 Coming soon.
 
-### From source
+### Download (no coding required)
+
+1. Go to the [latest release](https://github.com/chintan-27/ekagra/releases/latest)
+2. Download the `.zip` file
+3. Unzip it — you'll get a folder with the extension files
+4. Open Chrome and go to `chrome://extensions`
+5. Turn on **Developer mode** (toggle in the top-right corner)
+6. Click **Load unpacked**
+7. Select the unzipped folder
+8. Ekagra will appear in your extensions bar — click the icon to start!
+
+### Build from source
 
 ```bash
 git clone https://github.com/chintan-27/ekagra.git
@@ -31,11 +42,7 @@ npm install
 npm run build
 ```
 
-Then load the `dist/` folder as an unpacked extension:
-
-1. Open `chrome://extensions`
-2. Enable **Developer mode**
-3. Click **Load unpacked** and select the `dist/` directory
+Then load the `dist/` folder as an unpacked extension following steps 4-8 above.
 
 For development with hot reload:
 
