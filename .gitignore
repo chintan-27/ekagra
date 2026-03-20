@@ -1,8 +1,9 @@
 node_modules/
 dist/
+*.zip
 deep-research.md
 CLAUDE.md
 .claude
 .superpowers
 examples
-let;
+.DS_Store
